@@ -192,7 +192,6 @@ public class Scanner{
 //            System.out.printf("Program finsihed..\n");
 //            System.exit(0);
 //        }
-
         return currentToken.tokenStr;
     }// END OF GET NEXT
 
@@ -348,53 +347,69 @@ public class Scanner{
                 char stringDelimiter = textCharM[iColPos];
                 // advance cursor
                 iColPos++;
-                // get the string literal
-                while (textCharM[iColPos] != stringDelimiter) {
 
-                    // if the user is escaping the string delimiter, append the backslash
-                    // character and the string delimiter to the string literal
-                    if (textCharM[iColPos] == '\\') {
+                boolean bIsDate = false;
+                //Check if the token is actually a Date object instead
 
-                        switch (textCharM[iColPos+1]) {
-                            case '\'':
-                                textCharM[iColPos] = '\'';
-                                nextToken.tokenStr += String.valueOf(textCharM, iColPos, 1);
-                                iColPos += 2;
-                                break;
-                            case '"':
-                                textCharM[iColPos] = '"';
-                                nextToken.tokenStr += String.valueOf(textCharM, iColPos, 1);
-                                iColPos += 2;
-                                break;
-                            case '\\':
-                                textCharM[iColPos] = '\\';
-                                nextToken.tokenStr += String.valueOf(textCharM, iColPos, 1);
-                                iColPos += 2;
-                                break;
-                            case 'n':
-                                textCharM[iColPos] = 0x0A;
-                                nextToken.tokenStr += String.valueOf(textCharM, iColPos, 1);
-                                iColPos += 2;
-                                break;
-                            case 't':
-                                textCharM[iColPos] = 0x09;
-                                nextToken.tokenStr += String.valueOf(textCharM, iColPos, 1);
-                                iColPos += 2;
-                                break;
-                            case 'a':
-                                textCharM[iColPos] = 0x07;
-                                nextToken.tokenStr += String.valueOf(textCharM, iColPos, 1);
-                                iColPos += 2;
-                                break;
-                            default:
-                                nextToken.tokenStr += textCharM[iColPos];
-                                iColPos += 1;
-                        }
-                    }
-                    // otherwise, append the token to the string literal
-                    else {
+                if(textCharM[iColPos+4]=='-'&&textCharM[iColPos+7]=='-')
+                {
+                    nextToken.subClassif = SubClassif.DATE;
+                    bIsDate = true;
+                    while(textCharM[iColPos]!=stringDelimiter) {
                         nextToken.tokenStr += textCharM[iColPos];
                         iColPos++;
+                    }
+                }
+
+                // get the string literal
+                if(bIsDate == false) {
+                    while (textCharM[iColPos] != stringDelimiter) {
+
+                        // if the user is escaping the string delimiter, append the backslash
+                        // character and the string delimiter to the string literal
+                        if (textCharM[iColPos] == '\\') {
+
+                            switch (textCharM[iColPos + 1]) {
+                                case '\'':
+                                    textCharM[iColPos] = '\'';
+                                    nextToken.tokenStr += String.valueOf(textCharM, iColPos, 1);
+                                    iColPos += 2;
+                                    break;
+                                case '"':
+                                    textCharM[iColPos] = '"';
+                                    nextToken.tokenStr += String.valueOf(textCharM, iColPos, 1);
+                                    iColPos += 2;
+                                    break;
+                                case '\\':
+                                    textCharM[iColPos] = '\\';
+                                    nextToken.tokenStr += String.valueOf(textCharM, iColPos, 1);
+                                    iColPos += 2;
+                                    break;
+                                case 'n':
+                                    textCharM[iColPos] = 0x0A;
+                                    nextToken.tokenStr += String.valueOf(textCharM, iColPos, 1);
+                                    iColPos += 2;
+                                    break;
+                                case 't':
+                                    textCharM[iColPos] = 0x09;
+                                    nextToken.tokenStr += String.valueOf(textCharM, iColPos, 1);
+                                    iColPos += 2;
+                                    break;
+                                case 'a':
+                                    textCharM[iColPos] = 0x07;
+                                    nextToken.tokenStr += String.valueOf(textCharM, iColPos, 1);
+                                    iColPos += 2;
+                                    break;
+                                default:
+                                    nextToken.tokenStr += textCharM[iColPos];
+                                    iColPos += 1;
+                            }
+                        }
+                        // otherwise, append the token to the string literal
+                        else {
+                            nextToken.tokenStr += textCharM[iColPos];
+                            iColPos++;
+                        }
                     }
                 }
 

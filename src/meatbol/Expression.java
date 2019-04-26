@@ -67,6 +67,9 @@ public class Expression {
                     //System.out.printf("Pushing STRING\n");
                     resultStack.push(temp);
                     break;
+                case DATE:
+                    resultStack.push(temp);
+                    break;
                 case BUILTIN:
                     // TODO built in functions for expression
 
@@ -74,6 +77,7 @@ public class Expression {
                         parser.error("No parameters passed into function '%s'", temp.value);
 
                     ResultValue funcArg = resultStack.pop();
+                    ResultValue funcArg2 = new ResultValue();
 
                     switch (temp.value) {
                         case "LENGTH":
@@ -92,6 +96,9 @@ public class Expression {
                                 funcArg.value += "[";
                             resultStack.push(Utility.MAX(parser, funcArg));
                             break;
+                        case "dateDiff":
+                            funcArg2 = resultStack.pop();
+                            resultStack.push(Utility.dateDiff(parser, funcArg, funcArg2));
                         default:
                             break;
                     }

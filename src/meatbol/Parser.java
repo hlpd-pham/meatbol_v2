@@ -225,7 +225,6 @@ public class Parser {
 
                 switch(operatorStr) {
                     case "=":
-
                         resO2 = expr(";");
                         res = assign(variableStr, resO2);
                         break;
@@ -486,11 +485,9 @@ public class Parser {
 
             //Check for a unary minus being added right off the bat.
             if(scan.currentToken.tokenStr.equals("-")){
-                //System.out.printf("Current Token %s is a %s\n", scan.currentToken.tokenStr, scan.currentToken.subClassif.toString());
                 ResultValue res02 = new ResultValue();
                 res02 = expr(";");
                 res = assign(idenToken.tokenStr, res02);
-                //System.out.printf("UNARY MINUS DETECTOR %s, %s", res.value, res.type.toString());
                 return res;
             }
             // The item trying to be inputted into the variable is not the same type as what is being
@@ -723,7 +720,7 @@ public class Parser {
         Token operator = new Token();
 
         for (int i = 0; i < Out.size(); i++) {
-
+            //System.out.printf("Out has: %s (%s)\n", Out.get(i).tokenStr, Out.get(i).subClassif.toString());
             if (Out.get(i).primClassif == Classif.OPERAND) {
 
                 ResultValue operand = new ResultValue();
@@ -766,6 +763,7 @@ public class Parser {
 //                                pstStack.push(arrayIdentifier);
 //                            }
 //                        }
+                        //System.out.printf("IDENTIFIER FOUND:\n%s (%s)\n", temp.value, temp.structure.toString());
 
                         if (Out.get(i).idenClassif != IdenClassif.UNBOUND_ARRAY &&
                                 Out.get(i).idenClassif != IdenClassif.FIXED_ARRAY) {
@@ -799,6 +797,14 @@ public class Parser {
                         operand.value = Out.get(i).tokenStr;
                         operand.terminatingStr = "";
                         pstStack.push(operand);
+                        break;
+                    case DATE:
+                        operand.type = SubClassif.DATE;
+                        operand.structure = IdenClassif.PRIMITIVE;
+                        operand.value = Out.get(i).tokenStr;
+                        operand.terminatingStr = "";
+                        pstStack.push(operand);
+                        break;
                     default:
                         // TODO error?
                         break;
@@ -853,7 +859,7 @@ public class Parser {
 
                             break;
                         default:
-                            error("Unknown operator");
+                            error("Unknown operator, %s", operator.tokenStr);
                             break;
                     }
                 }
@@ -861,7 +867,6 @@ public class Parser {
         }
 
         res = Expression.expression(this, pstStack);
-
         return res;
     } // END evaluate
 
@@ -1227,6 +1232,7 @@ public class Parser {
 
         boolean bAddLiteral = false;
         boolean sepSwitch = false;
+        boolean bIgnoreComma = false;
         int internalParen = 0;
         Stack<Token> stack = new Stack<>();
         ArrayList<Token> Out = new ArrayList<>();
@@ -1234,6 +1240,7 @@ public class Parser {
         //scan.getNext();
         // keep printing until meeting right paren
         while (!scan.getNext().equals(")") || internalParen >= 1) {
+            //System.out.printf("expr: %s (%s)\n", scan.currentToken.tokenStr, scan.currentToken.subClassif.toString());
             //System.out.printf("internalParen: %d\n", internalParen);
             switch(scan.currentToken.primClassif) {
                 // if there is a comma as separator for print function
@@ -1250,6 +1257,7 @@ public class Parser {
                             //System.out.printf("Right Paren found |%s|%d --> Need to downgrade precedence\n", scan.nextToken.tokenStr, internalParen);
                             internalParen--;
                             boolean bFoundParen = false;
+                            bIgnoreComma = false;
                             while(!stack.isEmpty()) {
                                 Token popped = stack.pop();
                                 if(popped.tokenStr.equals("(")) {
@@ -1285,48 +1293,61 @@ public class Parser {
                             }
                             break;
                         case ",":
-                            //System.out.printf("Comma time: %s\n",scan.currentToken.tokenStr);
                             // if a comma wasn't detected before
+                            for(int i = 0; i < stack.size(); i++)
+                            {
+                                if(stack.get(i).tokenStr.equals("dateDiff"))
+                                    bIgnoreComma = true;
+                                else if(stack.get(i).tokenStr.equals("dateAdj"))
+                                    bIgnoreComma = true;
+                                else if(stack.get(i).tokenStr.equals("dateAge"))
+                                    bIgnoreComma = true;
+                            }
+                            if(!bIgnoreComma) {
+                                if (!sepSwitch) {
+                                    sepSwitch = true;
+                                    System.out.printf(" ");
+                                    //showStack(Out);
+                                    if (Out.size() > 0) {
+                                        while (!stack.empty()) {
+                                            Out.add(stack.pop());
+                                        }
 
-                            if (!sepSwitch) {
-                                sepSwitch = true;
-                                System.out.printf(" ");
-                                //showStack(Out);
-                                if(Out.size()>0){
+                                        res = evaluate(Out);
+                                        System.out.printf("%s ", res.value);
+                                    }
+                                    stack.clear();
+                                    Out.clear();
+                                    bAddLiteral = false;
+                                    bIgnoreComma = false;
+                                    continue;
+                                }
+                                // if a comma was detected before
+                                else {
+                                    // evaluate the expression between the separators
                                     while (!stack.empty()) {
                                         Out.add(stack.pop());
                                     }
                                     res = evaluate(Out);
-                                    System.out.printf("%s ",res.value);
+                                    bIgnoreComma = false;
+                                    // if there is nothing between the commas
+                                    if (res.value.equals("") && res.type != SubClassif.STRING) {
+                                        error("Empty expression between commas");
+                                    }
+
+                                    // print value of the evaluated expression to std
+                                    if (res.type == SubClassif.FLOAT && !res.value.contains("."))
+                                        res.value += ".0";
+                                    //System.out.printf("--%s--", res.type.toString());
+                                    System.out.printf("%s ", res.value);
+
+                                    // reset stack and out
+                                    stack = new Stack<>();
+                                    Out = new ArrayList<>();
+
                                 }
-                                stack.clear();
-                                Out.clear();
-                                bAddLiteral = false;
-                                continue;
                             }
-                            // if a comma was detected before
-                            else {
-                                // evaluate the expression between the separators
-                                while (!stack.empty()) {
-                                    Out.add(stack.pop());
-                                }
-                                res = evaluate(Out);
-                                // if there is nothing between the commas
-                                if (res.value.equals("") && res.type != SubClassif.STRING) {
-                                    error("Empty expression between commas");
-                                }
-
-                                // print value of the evaluated expression to std
-                                if (res.type == SubClassif.FLOAT && !res.value.contains("."))
-                                    res.value += ".0";
-                                //System.out.printf("--%s--", res.type.toString());
-                                System.out.printf("%s ",res.value);
-
-                                // reset stack and out
-                                stack = new Stack<>();
-                                Out = new ArrayList<>();
-
-                            }
+                            bIgnoreComma = false;
                             break;
                         default:
                             error("Expected ',' as separtor in print statement, found '%s'", scan.currentToken.tokenStr);

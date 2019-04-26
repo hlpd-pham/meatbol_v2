@@ -4,6 +4,8 @@ import javax.xml.transform.Result;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import static java.lang.Math.abs;
+
 public class Utility {
 
     /*******************************************************************************************************************
@@ -1087,5 +1089,48 @@ public class Utility {
 
         res.type = SubClassif.INTEGER;
         return res;
+    }
+
+    public static ResultValue dateDiff(Parser parser, ResultValue res01, ResultValue res02) throws Exception{
+         //Next leap year is 2020, happens every 4 years
+        ResultValue res = new ResultValue();
+        int result = abs(getDays(res01)- getDays(res02));
+        res.value = "" + result;
+        return res;
+    }
+    public static int getDays(ResultValue res){
+        int[] nonLeapYears = {31,28,31,30,31,30,31,31,30,31,30,31};
+        int[] LeapYears = {31,29,31,30,31,30,31,31,30,31,30,31};
+        String years = "";
+        String days = "";
+        String months = "";
+        int iTotalDays = 0;
+
+        for(int i = 0; i < res.value.length(); i++){
+            if(i<4)
+                years = years + res.value.charAt(i);
+            if(i==6||i==5)
+                months = months + res.value.charAt(i);
+            if(i==8||i==9)
+                days = days + res.value.charAt(i);
+        }
+        //Days Section
+        iTotalDays += Integer.parseInt(days);
+        //Months Section
+        int iYears = Integer.parseInt(years);
+        int iMonths = Integer.parseInt(months);
+        if(iYears%4==0){    //Leap year, so months are different
+            for(int i = 0; i < iMonths; i++){
+                iTotalDays += LeapYears[i];
+            }
+        }
+        else{
+            for(int i = 0; i < iMonths; i++){
+                iTotalDays += nonLeapYears[i];
+            }
+        }
+        //Years section
+        iTotalDays = iTotalDays + iYears*365 + (iYears/4);
+        return iTotalDays;
     }
 }
