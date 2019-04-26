@@ -1,0 +1,54 @@
+public ResultValue expr(String endSeparator) throws Exception
+    {
+        ArrayList<Token> out = new ArrayList<>();
+        Stack<Token> stack = new Stack();
+        while (!scan.getNext().equals(endSeparator)) {
+            switch (scan.currentToken.primClassif) {
+                case OPERAND:
+                    out.add(scan.currentToken);
+                    break;
+                case OPERATOR:
+                    while(!stack.isEmpty()) { // recognize flow control
+                        if (scan.currentToken.precedence > stack.peek().stackPrecedence)
+                            break;
+                        out.add(stack.pop());
+                    }
+                    stack.push(scan.currentToken);
+                    break;
+                case SEPARATOR:
+                    switch (scan.currentToken.tokenStr) {
+                        case "(":
+                            stack.push(scan.currentToken);
+                            break;
+                        case ")":
+                            boolean bFoundParen = false;
+                            while (!stack.isEmpty()) {
+                                Token popped = stack.pop();
+                                if (popped.tokenStr.equals("(")) {
+                                    bFoundParen = true;
+                                    break;
+                                }
+                                out.add(popped);
+                            }
+                            if (!bFoundParen)
+                                error("Missing left paren in expression");
+                        default:
+                            error("... invalid separator ... '%s'", scan.currentToken.tokenStr);
+                    }
+                    break;
+                default:
+                    error("Within expression, found invalid token '%s'", scan.currentToken.tokenStr);
+                    break;
+            }
+        }
+        while (!stack.isEmpty()) {
+            Token popped = stack.pop();
+            if (popped.tokenStr.equals("("))
+                error("Missing right paren in expression");
+            out.add(popped);
+        }
+
+        ResultValue res = evaluate(out);
+
+        return res;
+    } // END expr
