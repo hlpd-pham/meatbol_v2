@@ -1017,7 +1017,7 @@ public class Utility {
 
         // if the object is not String type then raise error
         if (res01.type != SubClassif.STRING)
-            parser.error("LENGTH method require argument to be of STRING type.");
+            parser.error("LENGTH method require argument to be of STRING type");
 
         // if it is String then return its length
         res.value =  Integer.toString(res01.value.length());
@@ -1046,7 +1046,7 @@ public class Utility {
 
         // if the object is not String type then raise error
         if (res01.type != SubClassif.STRING)
-            parser.error("SPACES method requires argument to be of STRING type.");
+            parser.error("SPACES method requires argument to be of STRING type");
 
         // if the String is empty or contain any space then return true
         if(res01.value.isEmpty()||res01.value.contains(" "))

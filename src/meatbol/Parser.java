@@ -1,6 +1,5 @@
 package meatbol;
 
-import javax.xml.transform.Result;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -102,6 +101,46 @@ public class Parser {
         // reference an array
         if (!variableStr.contains("["))
             arrayIdentifier = storageMgr.getVariable(this, variableStr);
+        // otherwise, it might be referencing an array or a string
+        else {
+            try
+            {
+                // if array variable can't be found in storage manager,
+                // it might be a string
+                arrayIdentifier = storageMgr.getVariable(this, variableStr);
+            }
+            catch (ParserException e)
+            {
+                // accesing string index
+                variableStr = variableStr.replaceAll("\\[", "");
+                ResultValue stringIdentifier = storageMgr.getVariable(this, variableStr);
+                if (stringIdentifier.type != SubClassif.STRING)
+                    error("Invalid argument for accessing indices '%s'", variableStr);
+
+                // move cursor pass the open bracket
+                scan.getNext();
+                // move cursor to the beginning of the expression for accessing index
+                scan.getNext();
+
+                // Get array index reference
+                ResultValue arrayIndex = expr("]");
+
+                // array index
+                arrayIndex = Utility.toInt(this, arrayIndex);
+
+                // get array index
+                int iArrayIndex = Integer.parseInt(arrayIndex.value);
+
+                // Boundary check
+                if (iArrayIndex > stringIdentifier.value.length())
+                    error("Index out of bound: '%s'", iArrayIndex);
+
+                // TODO continue string here
+                if (!scan.getNext().equals("="))
+                    error("");
+            }
+        }
+
 
         // if the identifier is just a regular variable, go to assignment for
         // regular variables
@@ -1290,7 +1329,6 @@ public class Parser {
 
                             if (!sepSwitch) {
                                 sepSwitch = true;
-                                System.out.printf(" ");
                                 //showStack(Out);
                                 if(Out.size()>0){
                                     while (!stack.empty()) {
