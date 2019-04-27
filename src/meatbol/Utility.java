@@ -1018,7 +1018,7 @@ public class Utility {
         }
 
         // if the object is not String type then raise error
-        if (res01.type != SubClassif.STRING)
+        if (res01.type != SubClassif.STRING && res01.type != SubClassif.BOOLEAN)
             parser.error("LENGTH method require argument to be of STRING type");
 
         // if it is String then return its length
