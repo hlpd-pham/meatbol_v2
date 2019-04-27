@@ -1,5 +1,6 @@
 package meatbol;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -107,7 +108,7 @@ public class Parser {
             {
                 // if array variable can't be found in storage manager,
                 // it might be a string
-                arrayIdentifier = storageMgr.getVariable(this, variableStr);
+                storageMgr.getArray(this, variableStr);
             }
             catch (ParserException e)
             {
@@ -135,9 +136,27 @@ public class Parser {
                 if (iArrayIndex > stringIdentifier.value.length())
                     error("Index out of bound: '%s'", iArrayIndex);
 
-                // TODO continue string here
                 if (!scan.getNext().equals("="))
-                    error("");
+                    error("Expected '=' for string element assignment. Found '%s'",
+                            scan.currentToken.tokenStr);
+
+                ResultValue res01;
+                res01 = expr(";");
+                if (res01.type != SubClassif.STRING)
+                    error("Result of expression must be type string");
+
+                StringBuilder stringItentiferValue = new StringBuilder(stringIdentifier.value);
+                for (int i = 0; i < res01.value.length(); i++) {
+                    if (iArrayIndex > stringItentiferValue.length())
+                        stringItentiferValue.append(res01.value.charAt(i));
+                    else
+                        stringItentiferValue.setCharAt(iArrayIndex, res01.value.charAt(i));
+                    iArrayIndex++;
+                }
+                stringIdentifier.value = stringItentiferValue.toString();
+                storageMgr.replace(this, variableStr, stringIdentifier);
+
+                return stringIdentifier;
             }
         }
 
@@ -1345,7 +1364,6 @@ public class Parser {
                             if(!bIgnoreComma) {
                                 if (!sepSwitch) {
                                     sepSwitch = true;
-                                    System.out.printf(" ");
                                     //showStack(Out);
                                     if (Out.size() > 0) {
                                         while (!stack.empty()) {
