@@ -1309,13 +1309,11 @@ public class Parser {
                         case "[":
                             break;
                         case "]":
-                            boolean bFoundArray = false;
                             while(!stack.isEmpty()) {
                                 Token popped = stack.pop();
                                 if (popped.idenClassif == IdenClassif.UNBOUND_ARRAY ||
                                         popped.idenClassif == IdenClassif.FIXED_ARRAY) {
                                     Out.add(popped);
-                                    bFoundArray = true;
                                     break;
                                 }
                                 Out.add(popped);
@@ -1388,8 +1386,11 @@ public class Parser {
                     if (!(scan.currentToken.idenClassif == IdenClassif.UNBOUND_ARRAY ||
                             scan.currentToken.idenClassif == IdenClassif.FIXED_ARRAY))
                         Out.add(scan.currentToken);
+                    // array indicator can also be string
                     else
+                    {
                         stack.push(scan.currentToken);
+                    }
                     break;
                 // if it is an operator, push it into the stack
                 case OPERATOR:

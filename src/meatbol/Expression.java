@@ -7,15 +7,11 @@ public class Expression {
 
     //Stack Out has the postfix expression within it already. We get this from expr(); FYI
     public static ResultValue expression(Parser parser, Stack<ResultValue> Out) throws Exception {
-        Stack<ResultValue> postfixStack = new Stack<>();
         Stack<ResultValue> resultStack = new Stack<>();
         ResultValue res = new ResultValue();
 
         ResultValue op1 = new ResultValue();
         ResultValue op2 = new ResultValue();
-
-        boolean bLengthFunc = false;
-        boolean bSpaceFunc, bElemFunc, bMaxElemFunc = false;
 
         for (int i = 0; i < Out.size(); i++) { //Loop through out, we need to make the postfix
             //System.out.printf("Expression: %s  (%d/%d)\n",Out.get(i).value, i, Out.size()-1);
@@ -159,10 +155,31 @@ public class Expression {
                 op1 = resultStack.pop();
                 return op1;
             }
-            else
+            else if (resultStack.size()==2)
             {
-                //ignore
-                //System.out.printf("You did something wrong, resultStack still has %d elements\n", resultStack.size());
+                // string token
+                op1 = resultStack.pop();
+                // integer token for accessing string
+                op2 = resultStack.pop();
+
+                // check if op2 is an integer
+                try {
+                    Utility.toInt(parser, op2);
+                }
+                catch(ParserException e)
+                {
+                    parser.error("Index of string must be integer");
+                }
+
+                // sanity check
+                if (op1.type != SubClassif.STRING)
+                    parser.error("Token '%s' is not string type", op1.value);
+
+                // let's go!!!!!!!!!!!!!
+                int iStringIndex = Integer.parseInt(op2.value);
+                char temp = op1.value.charAt(iStringIndex);
+                res.value = String.valueOf(temp);
+                return res;
             }
 
         return op1;
