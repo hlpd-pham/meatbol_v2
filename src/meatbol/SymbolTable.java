@@ -78,6 +78,9 @@ public class SymbolTable
         ht.put("ELEM", new STFunction("ELEM",Classif.FUNCTION,SubClassif.INTEGER,SubClassif.BUILTIN, VAR_ARGS));
         ht.put("MAXELEM", new STFunction("MAXELEM",Classif.FUNCTION,SubClassif.INTEGER,SubClassif.BUILTIN, VAR_ARGS));
         ht.put("SPACES", new STFunction("SPACES",Classif.FUNCTION,SubClassif.INTEGER,SubClassif.BUILTIN, VAR_ARGS));
+        ht.put("dateDiff", new STFunction("dateDiff",Classif.FUNCTION,SubClassif.INTEGER,SubClassif.BUILTIN, VAR_ARGS));
+        ht.put("dataAdj", new STFunction("dateAdj",Classif.FUNCTION,SubClassif.INTEGER,SubClassif.BUILTIN, VAR_ARGS));
+        ht.put("dataAge", new STFunction("dataAge",Classif.FUNCTION,SubClassif.INTEGER,SubClassif.BUILTIN, VAR_ARGS));
 
     }//END OF INIT GLOBAL
 
