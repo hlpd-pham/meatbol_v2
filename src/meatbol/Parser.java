@@ -140,20 +140,24 @@ public class Parser {
                     error("Expected '=' for string element assignment. Found '%s'",
                             scan.currentToken.tokenStr);
 
+                // move cursor pass assignment operator
+                scan.getNext();
+
                 ResultValue res01;
                 res01 = expr(";");
                 if (res01.type != SubClassif.STRING)
                     error("Result of expression must be type string");
 
-                StringBuilder stringItentiferValue = new StringBuilder(stringIdentifier.value);
+                // building new string
+                StringBuilder newStringVal = new StringBuilder(stringIdentifier.value);
                 for (int i = 0; i < res01.value.length(); i++) {
-                    if (iArrayIndex > stringItentiferValue.length())
-                        stringItentiferValue.append(res01.value.charAt(i));
+                    if (iArrayIndex >= stringIdentifier.value.length())
+                        newStringVal.append(res01.value.charAt(i));
                     else
-                        stringItentiferValue.setCharAt(iArrayIndex, res01.value.charAt(i));
+                        newStringVal.setCharAt(iArrayIndex, res01.value.charAt(i));
                     iArrayIndex++;
                 }
-                stringIdentifier.value = stringItentiferValue.toString();
+                stringIdentifier.value = newStringVal.toString();
                 storageMgr.replace(this, variableStr, stringIdentifier);
 
                 return stringIdentifier;
@@ -789,39 +793,6 @@ public class Parser {
                         temp.type = Out.get(i).subClassif;
                         temp.value = Out.get(i).tokenStr;
                         temp.structure = Out.get(i).idenClassif;
-//                        if (bLengthFunc){
-//                            pstStack.push(Utility.LENGTH(this, temp));
-//                            bLengthFunc = false;
-//                        }
-//                        else if(bSpaceFunc){
-//                            pstStack.push(Utility.SPACES(this, temp));
-//                            bSpaceFunc = false;
-//                        }
-//                        else if(bElemFunc){
-//                            temp = storageMgr.getArrayStructure(this, temp.value + "[");
-//                            temp.value += "[";
-//                            pstStack.push(Utility.ELEM(this, temp));
-//                            bSpaceFunc = false;
-//                        }
-//                        else if(bMaxElemFunc){
-//                            temp = storageMgr.getArrayStructure(this, temp.value + "[");
-//                            temp.value += "[";
-//                            pstStack.push(Utility.MAX(this, temp));
-//                            bSpaceFunc = false;
-//                        }
-//                        else {
-//                            if (Out.get(i).idenClassif != IdenClassif.UNBOUND_ARRAY &&
-//                                    Out.get(i).idenClassif != IdenClassif.FIXED_ARRAY) {
-//                                operand = storageMgr.getVariable(this, Out.get(i).tokenStr);
-//                                pstStack.push(operand);
-//                            }
-//                            else {
-//                                ResultValue arrayIdentifier = storageMgr.getVariable(this,
-//                                        Out.get(i).tokenStr.replaceAll("\\[", ""));
-//                                pstStack.push(arrayIdentifier);
-//                            }
-//                        }
-                        //System.out.printf("IDENTIFIER FOUND:\n%s (%s)\n", temp.value, temp.structure.toString());
 
                         if (Out.get(i).idenClassif != IdenClassif.UNBOUND_ARRAY &&
                                 Out.get(i).idenClassif != IdenClassif.FIXED_ARRAY) {
