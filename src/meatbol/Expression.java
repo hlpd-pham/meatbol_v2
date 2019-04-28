@@ -34,6 +34,15 @@ public class Expression {
                     try {
                         Utility.toInt(parser, index);
                         int iArrayIndex = Integer.parseInt(index.value);
+
+                        // negative subscript
+                        if (iArrayIndex < 0)
+                        {
+                            ResultValue resELEM = Utility.ELEM(parser, temp);
+                            int maxPopulated = Integer.parseInt(resELEM.value);
+                            iArrayIndex = maxPopulated + iArrayIndex;
+                        }
+
                         resultStack.push(tempArray.get(iArrayIndex));
                     }
                     catch (ParserException e) {
@@ -95,6 +104,7 @@ public class Expression {
                         case "dateDiff":
                             funcArg2 = resultStack.pop();
                             resultStack.push(Utility.dateDiff(parser, funcArg, funcArg2));
+                            break;
                         default:
                             break;
                     }
@@ -155,7 +165,7 @@ public class Expression {
                 op1 = resultStack.pop();
                 return op1;
             }
-            else if (resultStack.size()==2)
+            if (resultStack.size()==2)
             {
                 // string token
                 op1 = resultStack.pop();

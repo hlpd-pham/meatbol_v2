@@ -102,7 +102,7 @@ public class Parser {
         // reference an array
         if (!variableStr.contains("["))
             arrayIdentifier = storageMgr.getVariable(this, variableStr);
-        // otherwise, it might be referencing an array or a string
+            // otherwise, it might be referencing an array or a string
         else {
             try
             {
@@ -131,6 +131,10 @@ public class Parser {
 
                 // get array index
                 int iArrayIndex = Integer.parseInt(arrayIndex.value);
+
+                // target subsript cannot be < 0
+                if (iArrayIndex < 0)
+                    error("Target subsript cannot be lower than 0. Found '%d'", iArrayIndex);
 
                 // Boundary check
                 if (iArrayIndex > stringIdentifier.value.length())
@@ -189,6 +193,10 @@ public class Parser {
 
                 // get array index
                 int iArrayIndex = Integer.parseInt(arrayIndex.value);
+
+                // target subsript cannot be < 0
+                if (iArrayIndex < 0)
+                    error("Target subsript cannot be lower than 0. Found '%d'", iArrayIndex);
 
                 // get array from token string
                 ArrayList<ResultValue> arrayResM = storageMgr.getArray(this, variableToken.tokenStr);
@@ -1386,7 +1394,7 @@ public class Parser {
                     if (!(scan.currentToken.idenClassif == IdenClassif.UNBOUND_ARRAY ||
                             scan.currentToken.idenClassif == IdenClassif.FIXED_ARRAY))
                         Out.add(scan.currentToken);
-                    // array indicator can also be string
+                        // array indicator can also be string
                     else
                     {
                         stack.push(scan.currentToken);
