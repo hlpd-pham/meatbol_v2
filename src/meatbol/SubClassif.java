@@ -37,7 +37,7 @@ public enum SubClassif
     PEQUAL,         //  plus equal
     MEQUAL,         //  minus equal
     ASSIGN,         //  assignment
-
+    ARRAY_SLICE,    //  array slicing
     EXPO,           //  exponent (^)
 
     GOOD

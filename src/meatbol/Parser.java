@@ -78,6 +78,7 @@ public class Parser {
      */
     ResultValue assignmentStmt(Boolean bExec) throws Exception
     {
+        // returning value
         ResultValue res = new ResultValue();
 
         if (!bExec) {
@@ -286,6 +287,7 @@ public class Parser {
                     error("expected assignment operator.  Found '%s'", scan.currentToken.tokenStr);
                 }
 
+                // operator String
                 String operatorStr = scan.currentToken.tokenStr;
                 ResultValue resO2;
                 ResultValue resO1;
@@ -521,7 +523,7 @@ public class Parser {
                 res.type = SubClassif.DATE;
                 break;
             default:
-                // TODO error
+                break;
         }
 
         String nextTokenStr = scan.getNext();
@@ -638,8 +640,6 @@ public class Parser {
                     // get array size
                     iArraySize = Integer.parseInt(arraySize.value);
 
-                    // TODO call storage manager array size method
-
                     // check for closing bracket
                     if (!scan.currentToken.tokenStr.equals("]")) {
                         error("Expect ']' at declaration,  found '%s'", scan.currentToken.tokenStr);
@@ -694,6 +694,9 @@ public class Parser {
         Stack<Token> stack = new Stack<>();
         // begin on the first token of the expression
 
+        // flag for array slicing
+        boolean bArraySlicing = false;
+
         if (!(scan.currentToken.idenClassif == IdenClassif.UNBOUND_ARRAY ||
                 scan.currentToken.idenClassif == IdenClassif.FIXED_ARRAY))
         {
@@ -712,6 +715,15 @@ public class Parser {
                     out.add(scan.currentToken);
                     break;
                 case OPERATOR:
+
+                    // array slicing
+                    if (scan.currentToken.tokenStr.equals("~"))
+                    {
+                        out.add(scan.currentToken);
+                        bArraySlicing = true;
+                        break;
+                    }
+
                     while(!stack.isEmpty()) { // recognize flow control
                         if (scan.currentToken.getPrecedence()> stack.peek().getStackPrecedence())
                             break;
@@ -762,12 +774,27 @@ public class Parser {
             out.add(popped);
         }
 
-        ResultValue res = evaluate(out);
+        // return result variable
+        ResultValue res = new ResultValue();
+
+        // if the expression is used for array slicing
+        // assign tilda '~' as terminating string
+        if (bArraySlicing)
+        {
+            for (Token token : out) {
+                res.value += token.tokenStr;
+            }
+            res.terminatingStr = "~";
+            return res;
+        }
+
+        // otherwise, evaluate the expression and return
+        res = evaluate(out);
         return res;
     } // END expr
 
     /**
-     *
+     * execute all Meatbol statements in given file name
      * @throws Exception    see executeStatement description
      */
     public void execute() throws Exception {
@@ -868,32 +895,30 @@ public class Parser {
                         case "+":
                             operator2.type = SubClassif.PLUS;
                             pstStack.push(operator2);
-
                             break;
                         case "-":
                             operator2.type = SubClassif.MINUS;
                             pstStack.push(operator2);
-
                             break;
                         case "*":
                             operator2.type = SubClassif.MULTIPLY;
                             pstStack.push(operator2);
-
                             break;
                         case "/":
                             operator2.type = SubClassif.DIVIDE;
                             pstStack.push(operator2);
-
                             break;
                         case "^":
                             operator2.type = SubClassif.EXPO;
                             pstStack.push(operator2);
-
                             break;
                         case "#":
                             operator2.type = SubClassif.USER;
                             pstStack.push(operator2);
-
+                            break;
+                        case "~":
+                            operator2.type = SubClassif.ARRAY_SLICE;
+                            pstStack.push(operator2);
                             break;
                         default:
                             error("Unknown operator, %s", operator.tokenStr);
@@ -1252,7 +1277,7 @@ public class Parser {
     } // END ifStmt
 
     /**
-     *printFunc uses an arraylist to hold the various tokens that need to be printed after encountering a
+     * printFunc uses an arraylist to hold the various tokens that need to be printed after encountering a
      * "print" call in the input text. From here, it also evaluates the passed parameters with the print
      * function and adds it to the arraylist. It then prints the arraylist at the end.
      *
@@ -1402,6 +1427,12 @@ public class Parser {
                     break;
                 // if it is an operator, push it into the stack
                 case OPERATOR:
+
+                    if (scan.currentToken.tokenStr.equals("~"))
+                    {
+                        Out.add(scan.currentToken);
+                        break;
+                    }
 
                     while(!stack.isEmpty()) { // recognize flow control
                         if (scan.currentToken.getPrecedence() > stack.peek().getStackPrecedence())

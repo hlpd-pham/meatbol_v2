@@ -15,10 +15,10 @@ public class Scanner{
 
     /** token terminator
      */
-    public final static String delimiters = " \t;:()\'\"=!<>+-*/[]#,^\n";
+    public final static String delimiters = " \t;:()\'\"=!<>+-*/[]#,^\n~";
     /** operators in Meatbol
      */
-    public final static String operators = "+-*/<>=!^#";
+    public final static String operators = "+-*/<>=!^#~";
     /** separators in Meatbol
      */
     public final static String separators = "(),:;[]";
@@ -602,6 +602,9 @@ public class Scanner{
             case "-=":
                 nextToken.subClassif = SubClassif.MEQUAL;
                 break;
+            case "~":
+                nextToken.subClassif = SubClassif.ARRAY_SLICE;
+                break;
         }
         // assign stack precedence and expression precedence
         if (!"=-=+=".contains(op)) {
@@ -639,6 +642,9 @@ public class Scanner{
     public void initializePrecedence(){
         hToken.put("(",15);
         hStack.put("(",2);
+
+        hToken.put("~", 14);
+        hStack.put("~", 0);
 
         hToken.put("u-",12);
         hStack.put("u-",12);

@@ -154,6 +154,9 @@ public class Expression {
                     res = Utility.concat(parser, op1, op2);
                     resultStack.add(res);
                     break;
+                case "~":
+                    resultStack.push(temp);
+                    break;
                 default:
                     //System.out.printf("OOF\n");
                     //Parser.error("Unknown operator");
@@ -165,6 +168,7 @@ public class Expression {
                 op1 = resultStack.pop();
                 return op1;
             }
+            // access character in string
             if (resultStack.size()==2)
             {
                 // string token
@@ -190,6 +194,130 @@ public class Expression {
                 char temp = op1.value.charAt(iStringIndex);
                 res.value = String.valueOf(temp);
                 return res;
+            }
+            // array slice
+            else {
+                // case 1: arrayM[op1~op2]
+                if (resultStack.size() == 4)
+                {
+                    // array slice for string
+                    if (resultStack.get(0).type == SubClassif.INTEGER &&
+                        resultStack.get(2).type == SubClassif.INTEGER  &&
+                        resultStack.get(1).type == SubClassif.ARRAY_SLICE &&
+                        resultStack.get(3).type == SubClassif.STRING)
+                    {
+                        int iStartSlicining = Integer.parseInt(resultStack.get(0).value);
+                        int iEndSlicing = Integer.parseInt(resultStack.get(2).value);
+                        String sbIdentifierVal = resultStack.get(3).value;
+                        StringBuilder sbReturnVal = new StringBuilder();
+
+                        // subscript check
+                        if (iStartSlicining > iEndSlicing)
+                            parser.error("Array error: starting subscript cannot be smaller that ending subscript");
+
+                        // boundary check
+                        if (iEndSlicing > (sbIdentifierVal.length()-1) ||
+                                iStartSlicining > (sbIdentifierVal.length()-1) )
+                            parser.error("Array error: Index out of bound");
+
+                        // array slicing doesn't support negative subscript
+                        if (iStartSlicining < 0 || iEndSlicing < 0)
+                            parser.error("Array error: Index for array slicing cannot be negative");
+
+                        // build the slice for string
+                        for (int i = iStartSlicining; i < iEndSlicing; i++)
+                            sbReturnVal.append(sbIdentifierVal.charAt(i));
+
+
+                        res.type = SubClassif.STRING;
+                        res.value = sbReturnVal.toString();
+                        res.structure = IdenClassif.PRIMITIVE;
+
+                        return res;
+                    }
+                    else if (resultStack.get(0).type == SubClassif.INTEGER &&
+                            resultStack.get(2).type == SubClassif.INTEGER  &&
+                            resultStack.get(1).type == SubClassif.ARRAY_SLICE &&
+                            (   resultStack.get(3).structure == IdenClassif.UNBOUND_ARRAY ||
+                                resultStack.get(3).structure == IdenClassif.FIXED_ARRAY))
+                    {
+                        int iStartSlicining = Integer.parseInt(resultStack.get(0).value);
+                        int iEndSlicing = Integer.parseInt(resultStack.get(1).value);
+
+                        // subscript check
+                        if (iStartSlicining > iEndSlicing)
+                            parser.error("Array error: starting subscript cannot be smaller that ending subscript");
+
+//                        // boundary check
+//                        if (iEndSlicing > (sbIdentifierVal.length()-1) ||
+//                                iStartSlicining > (sbIdentifierVal.length()-1) )
+//                            parser.error("Array error: Index out of bound");
+
+                        // array slicing doesn't support negative subscript
+                        if (iStartSlicining < 0 || iEndSlicing < 0)
+                            parser.error("Array error: Index for array slicing cannot be negative");
+                    }
+                    else
+                        parser.error("Array Error: Invalid expression for array slicing");
+                }
+                // case 2: arrayM[op1~]
+                // case 3: arrayM[~op1]
+                else if (resultStack.size() == 3 && resultStack.get(2).type == SubClassif.STRING) {
+
+                    // boolean flag to choose case 2 or 3
+                    boolean bSubscriptStart = false;
+                    String sbIdentifierVal = resultStack.get(2).value;
+                    StringBuilder sbReturnVal = new StringBuilder();
+
+                    if (resultStack.get(0).type == SubClassif.INTEGER &&
+                        resultStack.get(1).type == SubClassif.ARRAY_SLICE)
+                        bSubscriptStart = true;
+                    else if (resultStack.get(1).type == SubClassif.INTEGER &&
+                            resultStack.get(0).type == SubClassif.ARRAY_SLICE)
+                        bSubscriptStart = false;
+                    else
+                        parser.error("Array Error: Invalid expression for array slicing");
+
+                    int iSubscript;
+
+                    // assign value for iSubscript
+                    if (bSubscriptStart)
+                        iSubscript = Integer.parseInt(resultStack.get(0).value);
+                    else
+                        iSubscript = Integer.parseInt(resultStack.get(1).value);
+
+                    // subscript check
+                    if (iSubscript < 0)
+                        parser.error("Array error: Index for array slicing cannot be negative");
+
+                    // boundary check
+                    if (iSubscript > (sbIdentifierVal.length()-1))
+                        parser.error("Array error: Index out of bound");
+
+                    // get the substring
+                    if (bSubscriptStart)
+                    {
+                        // build the slice for string
+                        for (int i = iSubscript; i < sbIdentifierVal.length(); i++)
+                            sbReturnVal.append(sbIdentifierVal.charAt(i));
+                    }
+                    else
+                    {
+                        // build the slice for string
+                        for (int i = 0; i < iSubscript; i++)
+                            sbReturnVal.append(sbIdentifierVal.charAt(i));
+                    }
+
+                    res.type = SubClassif.STRING;
+                    res.value = sbReturnVal.toString();
+                    res.structure = IdenClassif.PRIMITIVE;
+
+                    return res;
+
+                }
+                else
+                    parser.error("Array Error: Invalid expression for array slicing");
+
             }
 
         return op1;
@@ -233,6 +361,8 @@ public class Expression {
                     return 10;
                 else
                     return 11;
+            case "~":
+                return 14;
             case "*":
             case "/":
                 return 9;
