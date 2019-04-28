@@ -299,7 +299,6 @@ public class Scanner{
 
         // token is an operator
         if (operators.indexOf(textCharM[iColPos]) != -1) {
-
             nextToken.primClassif = Classif.OPERATOR;
             nextToken.subClassif = SubClassif.EMPTY;
 
@@ -337,6 +336,10 @@ public class Scanner{
         // token is a string delimiter
         else {
 
+            //for( int i = iColPos; i < textCharM.length; i++){
+                //System.out.printf("%c", textCharM[i]);
+            //}
+
             try {
                 // set attributes for nextToken
                 nextToken.primClassif = Classif.OPERAND;
@@ -350,20 +353,21 @@ public class Scanner{
 
                 boolean bIsDate = false;
                 //Check if the token is actually a Date object instead
-
-                if(textCharM[iColPos+4]=='-'&&textCharM[iColPos+7]=='-')
-                {
-                    nextToken.subClassif = SubClassif.DATE;
-                    bIsDate = true;
-                    while(textCharM[iColPos]!=stringDelimiter) {
-                        nextToken.tokenStr += textCharM[iColPos];
-                        iColPos++;
+                if(textCharM.length==11) {
+                    if (textCharM[iColPos + 4] == '-' && textCharM[iColPos + 7] == '-') {
+                        nextToken.subClassif = SubClassif.DATE;
+                        bIsDate = true;
+                        while (textCharM[iColPos] != stringDelimiter) {
+                            nextToken.tokenStr += textCharM[iColPos];
+                            iColPos++;
+                        }
                     }
                 }
 
                 // get the string literal
                 if(bIsDate == false) {
                     while (textCharM[iColPos] != stringDelimiter) {
+                        //System.out.printf("%c", textCharM[iColPos]);
 
                         // if the user is escaping the string delimiter, append the backslash
                         // character and the string delimiter to the string literal
