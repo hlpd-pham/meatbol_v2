@@ -296,11 +296,13 @@ public class Scanner{
      * @throws Exception    if the token is a string literal not terminated
      */
     private void handleDelimiter() throws Exception{
+        //System.out.printf("Handle Delim: %s ", currentToken.tokenStr);
 
         // token is an operator
         if (operators.indexOf(textCharM[iColPos]) != -1) {
             nextToken.primClassif = Classif.OPERATOR;
             nextToken.subClassif = SubClassif.EMPTY;
+            //System.out.printf("OPERATOR\n");
 
             // check for combine 2 characters operators, else tokenStr is just the current operator
             if (iColPos < (textCharM.length-1) && textCharM[iColPos+1] == '=') {
@@ -326,6 +328,7 @@ public class Scanner{
         else if (separators.indexOf(textCharM[iColPos]) != -1) {
             nextToken.primClassif = Classif.SEPARATOR;
             nextToken.subClassif = SubClassif.EMPTY;
+            //System.out.printf("SEPARATOR\n");
 
             // if token is a parenthesis, assign stack and expression precedences
             if (textCharM[iColPos] == '(') {
@@ -335,10 +338,6 @@ public class Scanner{
         }
         // token is a string delimiter
         else {
-
-            //for( int i = iColPos; i < textCharM.length; i++){
-                //System.out.printf("%c", textCharM[i]);
-            //}
 
             try {
                 // set attributes for nextToken
@@ -353,7 +352,7 @@ public class Scanner{
 
                 boolean bIsDate = false;
                 //Check if the token is actually a Date object instead
-                if(textCharM.length==11) {
+                if(textCharM.length==11&&iColPos+7<=textCharM.length) {
                     if (textCharM[iColPos + 4] == '-' && textCharM[iColPos + 7] == '-') {
                         nextToken.subClassif = SubClassif.DATE;
                         bIsDate = true;
@@ -422,6 +421,7 @@ public class Scanner{
 
                 return;
             }
+
             // if the user does not terminate the string literal in the same line
             catch (ArrayIndexOutOfBoundsException e) {
                 String message = String.format("Line %d String literal not terminated: '%s', File: %s",
@@ -445,7 +445,6 @@ public class Scanner{
      */
     private void handleOperand() throws Exception {
         nextToken.primClassif = Classif.OPERAND;
-
         // get the token
         while (iColPos < textCharM.length && delimiters.indexOf(textCharM[iColPos]) == -1) {
             nextToken.tokenStr += textCharM[iColPos];
@@ -479,9 +478,9 @@ public class Scanner{
         {
             // check if token is a Meatbol symbol
             STEntry mbSymbol = symbolTable.getSymbol(nextToken.tokenStr);
+
             // if mbSymbol is null, the token is not a symbol
             if (mbSymbol == null) {
-
                 // move cursor to the next token to find possible bracket
                 // for array
                 skipWhiteSpace();
@@ -698,6 +697,12 @@ public class Scanner{
         hStack.put("MAXELEM",2);
         hToken.put("SPACES",16);
         hStack.put("SPACES",2);
+        hToken.put("dateDiff",16);
+        hStack.put("dateDiff",2);
+        hToken.put("dateAdj",16);
+        hStack.put("dateAdj",2);
+        hToken.put("dateAge",16);
+        hStack.put("dateAge",2);
     }
 }
 

@@ -1098,6 +1098,51 @@ public class Utility {
         res.value = "" + result;
         return res;
     }
+
+    public static ResultValue dateAdj(Parser parser, ResultValue res01, int iChangeDays) throws Exception{
+        ResultValue res = new ResultValue();
+        int[] nonLeapYears = {31,28,31,30,31,30,31,31,30,31,30,31};
+        int[] LeapYears = {31,29,31,30,31,30,31,31,30,31,30,31};
+        int result = getDays(res01);
+        result += iChangeDays;
+        int years = result/365;
+        result = result%365;
+        int months = 0;
+        int i = 0;
+        if(years%4==0){
+            while(LeapYears[i]<result){
+                result -= LeapYears[i];
+                months++;
+                i++;
+            }
+        }
+        else{
+            while(nonLeapYears[i]<result){
+                result -= nonLeapYears[i];
+                months++;
+                i++;
+            }
+        }
+        String date;
+        if(months<10)
+            date = years+"-0"+months+"-"+result;
+        else
+            date = years+"-"+months+"-"+result;
+
+        res.value = date;
+        res.type = SubClassif.DATE;
+        return res;
+    }
+
+    public static ResultValue dateAge(Parser parser,ResultValue res01, ResultValue res02){
+        ResultValue res = new ResultValue();
+        int result = abs(getDays(res01)- getDays(res02));
+        res.value = ""+result/365;
+        res.type = SubClassif.INTEGER;
+        return res;
+    }
+
+
     public static int getDays(ResultValue res){
         int[] nonLeapYears = {31,28,31,30,31,30,31,31,30,31,30,31};
         int[] LeapYears = {31,29,31,30,31,30,31,31,30,31,30,31};

@@ -27,6 +27,8 @@ public class Parser {
      */
     public Debugger debug;
 
+    public int counter = 0;
+
     /**
      *Parser constructor
      *@param sourceFileNm       source file name
@@ -76,7 +78,6 @@ public class Parser {
      */
     ResultValue assignmentStmt(Boolean bExec) throws Exception
     {
-        // returning value
         ResultValue res = new ResultValue();
 
         if (!bExec) {
@@ -123,166 +124,41 @@ public class Parser {
                 scan.getNext();
 
                 // Get array index reference
-                ResultValue arrayIndex = expr("]", false);
+                ResultValue arrayIndex = expr("]");
 
-                // access array at index
-                if (arrayIndex.type != SubClassif.ARRAY_SLICE &&
-                        !arrayIndex.terminatingStr.equals("~"))
-                {
-                    // array index
-                    arrayIndex = Utility.toInt(this, arrayIndex);
+                // array index
+                arrayIndex = Utility.toInt(this, arrayIndex);
 
-                    // get array index
-                    int iArrayIndex = Integer.parseInt(arrayIndex.value);
+                // get array index
+                int iArrayIndex = Integer.parseInt(arrayIndex.value);
 
-                    // target subsript cannot be < 0
-                    if (iArrayIndex < 0)
-                        error("Target subsript cannot be lower than 0. Found '%d'", iArrayIndex);
+                // Boundary check
+                if (iArrayIndex > stringIdentifier.value.length())
+                    error("Index out of bound: '%s'", iArrayIndex);
 
-                    // Boundary check
-                    if (iArrayIndex > stringIdentifier.value.length())
-                        error("Index out of bound: '%s'", iArrayIndex);
+                if (!scan.getNext().equals("="))
+                    error("Expected '=' for string element assignment. Found '%s'",
+                            scan.currentToken.tokenStr);
 
-                    if (!scan.getNext().equals("="))
-                        error("Expected '=' for string element assignment. Found '%s'",
-                                scan.currentToken.tokenStr);
+                // move cursor pass assignment operator
+                scan.getNext();
 
-                    // move cursor pass assignment operator
-                    scan.getNext();
+                ResultValue res01;
+                res01 = expr(";");
+                if (res01.type != SubClassif.STRING)
+                    error("Result of expression must be type string");
 
-                    ResultValue res01;
-                    res01 = expr(";", true);
-                    if (res01.type != SubClassif.STRING)
-                        error("Result of expression must be type string");
-
-                    // building new string
-                    StringBuilder newStringVal = new StringBuilder(stringIdentifier.value);
-                    for (int i = 0; i < res01.value.length(); i++) {
-                        if (iArrayIndex >= stringIdentifier.value.length())
-                            newStringVal.append(res01.value.charAt(i));
-                        else
-                            newStringVal.setCharAt(iArrayIndex, res01.value.charAt(i));
-                        iArrayIndex++;
-                    }
-                    stringIdentifier.value = newStringVal.toString();
-                    storageMgr.replace(this, variableStr, stringIdentifier);
-                }
-                // slicing of string
-                else {
-                    String arraySlice = arrayIndex.value;
-
-                    if (arraySlice.length() == 2)
-                    {
-                        int iSubscript = Integer.parseInt(arraySlice.replaceAll("~",""));
-                        String idenValue = stringIdentifier.value;
-
-                        // slicing doesn't support negative subscript
-                        if (iSubscript < 0)
-                            error("Negative subscript in slicing");
-
-                        // boundary check
-                        if (iSubscript >= idenValue.length())
-                            error("Index out of bound '%d'", iSubscript);
-
-                        // case 1: '~op1'
-                        if (arraySlice.indexOf("~") == 0)
-                        {
-                            // keep the end part of the string
-                            String keep = idenValue.substring(iSubscript);
-
-                            if (!scan.getNext().equals("="))
-                                error("Expected '=' for string element assignment. Found '%s'",
-                                        scan.currentToken.tokenStr);
-
-                            // move cursor pass assignment operator
-                            scan.getNext();
-
-                            // evaluate
-                            ResultValue res01;
-                            res01 = expr(";", true);
-                            if (res01.type != SubClassif.STRING)
-                                error("Result of expression must be type string");
-
-                            // append the expression result to the part we kept before
-                            res01.value += keep;
-                            stringIdentifier.value = res01.value;
-                            storageMgr.replace(this, variableStr, stringIdentifier);
-                        }
-                        // case 2: 'op1~'
-                        else {
-                            // keep from index zero to subscript
-                            String keep = idenValue.substring(0, iSubscript);
-
-                            if (!scan.getNext().equals("="))
-                                error("Expected '=' for string element assignment. Found '%s'",
-                                        scan.currentToken.tokenStr);
-
-                            // move cursor pass assignment operator
-                            scan.getNext();
-
-                            // evaluate
-                            ResultValue res01;
-                            res01 = expr(";", true);
-                            if (res01.type != SubClassif.STRING)
-                                error("Result of expression must be type string");
-
-                            // append the expression result to the part we kept before
-                            res01.value = keep + res01.value;
-                            stringIdentifier.value = res01.value;
-                            storageMgr.replace(this, variableStr, stringIdentifier);
-                        }
-                    }
-                    // case 3: 'op1~op2'
-                    else if (arraySlice.length() == 3)
-                    {
-                        String[] parts = arraySlice.split("~");
-                        int iStartSlicing = Integer.parseInt(parts[0]);
-                        int iEndSlicing = Integer.parseInt(parts[1]);
-                        String sbIdentifierVal = stringIdentifier.value;
-
-                        // subscript check
-                        if (iStartSlicing > iEndSlicing)
-                            error("Array error: starting subscript cannot be smaller that ending subscript");
-
-                        // boundary check
-                        if (iEndSlicing > (sbIdentifierVal.length()-1) ||
-                                iStartSlicing > (sbIdentifierVal.length()-1) )
-                            error("Array error: Index out of bound");
-
-                        // array slicing doesn't support negative subscript
-                        if (iStartSlicing < 0 || iEndSlicing < 0)
-                            error("Array error: Index for array slicing cannot be negative");
-
-                        // from index 0 of string to iStartSlicing
-                        String startKeep = "";
-                        // from index iEndSlicing to the end of string
-                        String endKeep = "";
-                        // from iStartSlicing to iEndSlicing
-
-                        if (iStartSlicing != 0)
-                            startKeep = sbIdentifierVal.substring(0, iStartSlicing);
-
-                        endKeep = sbIdentifierVal.substring(iEndSlicing);
-
-                        if (!scan.getNext().equals("="))
-                            error("Expected '=' for string element assignment. Found '%s'",
-                                    scan.currentToken.tokenStr);
-
-                        // move cursor pass assignment operator
-                        scan.getNext();
-
-                        // evaluate
-                        ResultValue res01;
-                        res01 = expr(";", true);
-                        if (res01.type != SubClassif.STRING)
-                            error("Result of expression must be type string");
-
-                        stringIdentifier.value = startKeep + res01.value + endKeep;
-                        storageMgr.replace(this, variableStr, stringIdentifier);
-                    }
+                // building new string
+                StringBuilder newStringVal = new StringBuilder(stringIdentifier.value);
+                for (int i = 0; i < res01.value.length(); i++) {
+                    if (iArrayIndex >= stringIdentifier.value.length())
+                        newStringVal.append(res01.value.charAt(i));
                     else
-                        error("Error in string slicing assignment. Found '%s'", arraySlice);
+                        newStringVal.setCharAt(iArrayIndex, res01.value.charAt(i));
+                    iArrayIndex++;
                 }
+                stringIdentifier.value = newStringVal.toString();
+                storageMgr.replace(this, variableStr, stringIdentifier);
 
                 return stringIdentifier;
             }
@@ -306,17 +182,13 @@ public class Parser {
                 scan.getNext();
 
                 // Get array index reference
-                ResultValue arrayIndex = expr("]", false);
+                ResultValue arrayIndex = expr("]");
 
                 // array index
                 arrayIndex = Utility.toInt(this, arrayIndex);
 
                 // get array index
                 int iArrayIndex = Integer.parseInt(arrayIndex.value);
-
-                // target subsript cannot be < 0
-                if (iArrayIndex < 0)
-                    error("Target subsript cannot be lower than 0. Found '%d'", iArrayIndex);
 
                 // get array from token string
                 ArrayList<ResultValue> arrayResM = storageMgr.getArray(this, variableToken.tokenStr);
@@ -361,11 +233,11 @@ public class Parser {
 
                 switch(operatorStr) {
                     case "=":
-                        res = expr(";", false);
+                        res = expr(";");
                         break;
                     case "-=":
                         // get evaluated value of expression
-                        resO2 = expr(";", false);
+                        resO2 = expr(";");
                         // expression must be numeric, raise exception if not
                         // pass this (the parser) you can know where the line number is
                         if (resO2.type != SubClassif.INTEGER && resO2.type != SubClassif.FLOAT) {
@@ -375,7 +247,7 @@ public class Parser {
                         break;
                     case "+=":
                         // get evaluated value of expression
-                        resO2 = expr(";", false);
+                        resO2 = expr(";");
                         // expression must be numeric, raise exception if not
                         // pass this (the parser) you can know where the line number is
                         if (resO2.type != SubClassif.INTEGER && resO2.type != SubClassif.FLOAT) {
@@ -406,7 +278,6 @@ public class Parser {
                     error("expected assignment operator.  Found '%s'", scan.currentToken.tokenStr);
                 }
 
-                // operator String
                 String operatorStr = scan.currentToken.tokenStr;
                 ResultValue resO2;
                 ResultValue resO1;
@@ -414,15 +285,16 @@ public class Parser {
                 // move cursor pass the assignment operator
                 scan.getNext();
 
+
                 switch(operatorStr) {
                     case "=":
-                        resO2 = expr(";", false);
+                        resO2 = expr(";");
                         res = assign(variableStr, resO2);
                         break;
                     case "-=":
 
                         // get evaluated value of expression
-                        resO2 = expr(";", false);
+                        resO2 = expr(";");
                         // expression must be numeric, raise exception if not
                         // pass this (the parser) you can know where the line number is
                         if (resO2.type != SubClassif.INTEGER && resO2.type != SubClassif.FLOAT) {
@@ -434,7 +306,7 @@ public class Parser {
                     case "+=":
 
                         // get evaluated value of expression
-                        resO2 = expr(";", false);
+                        resO2 = expr(";");
                         // expression must be numeric, raise exception if not
                         // pass this (the parser) you can know where the line number is
                         if (resO2.type != SubClassif.INTEGER && resO2.type != SubClassif.FLOAT) {
@@ -462,6 +334,7 @@ public class Parser {
             // move cursor pass the assignment operator
             scan.getNext();
 
+            System.out.printf("Assigning %s now\n", scan.currentToken.tokenStr);
             // NOTE: at this point, current token carries the source value to
             // be assigned
 
@@ -674,13 +547,23 @@ public class Parser {
             //Move past equals and into the next token(Should be whats being inputted into the var.
             scan.getNext();
 
+
+            //Check for a unary minus being added right off the bat.
+            if(scan.currentToken.tokenStr.equals("-")){
+                ResultValue res02 = new ResultValue();
+                res02 = expr(";");
+                res = assign(idenToken.tokenStr, res02);
+                return res;
+            }
+            // The item trying to be inputted into the variable is not the same type as what is being
+            // initialized. If not, continue and assign it to the variable.
+            else if(scan.currentToken.subClassif != res.type && scan.currentToken.subClassif!=SubClassif.BUILTIN)
+            {
+                error("Mismatch type with '%s.%s'", scan.currentToken.tokenStr, scan.currentToken.subClassif.toString());
+            }
+
             ResultValue res02;
-            // evaluate value for variable
-            res02 = expr(";", false);
-
-            if (res02.type != res.type)
-                error("Mismatch type with '%s'", idenToken.tokenStr);
-
+            res02 = expr(";");
             res = assign(idenToken.tokenStr, res02);
             return res;
         }
@@ -693,7 +576,7 @@ public class Parser {
             // meatbol array
             ArrayList<ResultValue> arrayM = new ArrayList<>();
 
-            var iArraySize = 0;
+            int iArraySize = 0;
 
             switch (scan.getNext()) {
 
@@ -742,7 +625,7 @@ public class Parser {
                 default:
 
                     // Get array size
-                    ResultValue arraySize = expr("]", false);
+                    ResultValue arraySize = expr("]");
 
                     // array size must be an integer
                     arraySize = Utility.toInt(this, arraySize);
@@ -798,14 +681,13 @@ public class Parser {
      * @return res              ResultValue containing the popped tokens in precedence order
      * @throws Exception        ParserExpection (see code for more details)
      */
-    public ResultValue expr(String endSeparator, boolean bStringSlice) throws Exception
+    public ResultValue expr(String endSeparator) throws Exception
     {
         ArrayList<Token> out = new ArrayList<>();
         Stack<Token> stack = new Stack<>();
-        // begin on the first token of the expression
 
-        // flag for array slicing
         boolean bArraySlicing = false;
+        // begin on the first token of the expression
 
         if (!(scan.currentToken.idenClassif == IdenClassif.UNBOUND_ARRAY ||
                 scan.currentToken.idenClassif == IdenClassif.FIXED_ARRAY))
@@ -814,21 +696,19 @@ public class Parser {
                 out.add(scan.currentToken);
             }
             else
-                if (scan.currentToken.tokenStr.equals("~"))
-                    out.add(scan.currentToken);
-                else
-                    stack.push(scan.currentToken);
+                stack.push(scan.currentToken);
 
         }
+
         scan.getNext();
 
         while (!endSeparator.contains(scan.currentToken.tokenStr)) {
+            //System.out.printf("Out has: %s (%s)\n", scan.currentToken.tokenStr, scan.currentToken.primClassif.toString());
             switch (scan.currentToken.primClassif) {
                 case OPERAND:
                     out.add(scan.currentToken);
                     break;
                 case OPERATOR:
-
                     // array slicing
                     if (scan.currentToken.tokenStr.equals("~"))
                     {
@@ -870,6 +750,9 @@ public class Parser {
                             if (!bFoundParen)
                                 error("Missing left paren in expression");
                             break;
+                        case ",":
+                            //ignore
+                            break;
                         default:
                             error("... invalid separator ...");
                     }
@@ -887,12 +770,11 @@ public class Parser {
             out.add(popped);
         }
 
-        // return result variable
+        //ResultValue res = evaluate(out);
         ResultValue res = new ResultValue();
-
         // if the expression is used for array slicing
         // assign tilda '~' as terminating string
-        if (bArraySlicing && (out.size() < 3))
+        if (bArraySlicing)
         {
             for (Token token : out) {
                 res.value += token.tokenStr;
@@ -902,7 +784,7 @@ public class Parser {
         }
 
         // otherwise, evaluate the expression and return
-        res = evaluate(out, bStringSlice);
+        res = evaluate(out);
         return res;
     } // END expr
 
@@ -922,7 +804,7 @@ public class Parser {
      * @return  res         ResultValue containing the final result of the popping and evaluation utility methods
      * @throws Exception    ParserException (see code for more details)
      */
-    public ResultValue evaluate(ArrayList<Token> Out, boolean bStringSlice) throws Exception
+    public ResultValue evaluate(ArrayList<Token> Out) throws Exception
     {
         ResultValue res = new ResultValue();
 
@@ -1041,7 +923,7 @@ public class Parser {
             }
         }
 
-        res = Expression.expression(this, pstStack, bStringSlice);
+        res = Expression.expression(this, pstStack);
         return res;
     } // END evaluate
 
@@ -1081,12 +963,12 @@ public class Parser {
         ResultValue rightRes = new ResultValue();
 
         //System.out.printf("Current Token before evalconds: %s\n", scan.currentToken.tokenStr);
-        leftRes = expr(sLogicOperands, false);
+        leftRes = expr(sLogicOperands);
 
         //System.out.printf("Should be the logic in evalconds: %s\n", scan.currentToken.tokenStr);
         logicalOperator = scan.currentToken.tokenStr;
         scan.getNext();
-        rightRes = expr(":", false);
+        rightRes = expr(":");
         //System.out.printf("Current Token after evalconds: %s\n", scan.currentToken.tokenStr);
 
         switch (logicalOperator) {
@@ -1390,7 +1272,7 @@ public class Parser {
     } // END ifStmt
 
     /**
-     * printFunc uses an arraylist to hold the various tokens that need to be printed after encountering a
+     *printFunc uses an arraylist to hold the various tokens that need to be printed after encountering a
      * "print" call in the input text. From here, it also evaluates the passed parameters with the print
      * function and adds it to the arraylist. It then prints the arraylist at the end.
      *
@@ -1415,7 +1297,7 @@ public class Parser {
         //scan.getNext();
         // keep printing until meeting right paren
         while (!scan.getNext().equals(")") || internalParen >= 1) {
-            //System.out.printf("expr: %s (%s)\n", scan.currentToken.tokenStr, scan.currentToken.subClassif.toString());
+            //System.out.printf("expr: %s (%s/%s)\n", scan.currentToken.tokenStr, scan.currentToken.primClassif.toString(), scan.currentToken.subClassif.toString());
             //System.out.printf("internalParen: %d\n", internalParen);
             switch(scan.currentToken.primClassif) {
                 // if there is a comma as separator for print function
@@ -1469,13 +1351,16 @@ public class Parser {
                             // if a comma wasn't detected before
                             for(int i = 0; i < stack.size(); i++)
                             {
+                                //System.out.printf("%s->", stack.get(i).tokenStr);
                                 if(stack.get(i).tokenStr.equals("dateDiff"))
                                     bIgnoreComma = true;
-                                else if(stack.get(i).tokenStr.equals("dateAdj"))
+                                else if(stack.get(i).tokenStr.equals("dateAdj")){
                                     bIgnoreComma = true;
+                                }
                                 else if(stack.get(i).tokenStr.equals("dateAge"))
                                     bIgnoreComma = true;
                             }
+                            //System.out.printf("bIgnoreComma: %s\n", bIgnoreComma);
                             if(!bIgnoreComma) {
                                 if (!sepSwitch) {
                                     sepSwitch = true;
@@ -1485,7 +1370,7 @@ public class Parser {
                                             Out.add(stack.pop());
                                         }
 
-                                        res = evaluate(Out, true);
+                                        res = evaluate(Out);
                                         System.out.printf("%s ", res.value);
                                     }
                                     stack.clear();
@@ -1500,7 +1385,7 @@ public class Parser {
                                     while (!stack.empty()) {
                                         Out.add(stack.pop());
                                     }
-                                    res = evaluate(Out, true);
+                                    res = evaluate(Out);
                                     bIgnoreComma = false;
                                     // if there is nothing between the commas
                                     if (res.value.equals("") && res.type != SubClassif.STRING) {
@@ -1532,7 +1417,7 @@ public class Parser {
                     if (!(scan.currentToken.idenClassif == IdenClassif.UNBOUND_ARRAY ||
                             scan.currentToken.idenClassif == IdenClassif.FIXED_ARRAY))
                         Out.add(scan.currentToken);
-                        // array indicator can also be string
+                    // array indicator can also be string
                     else
                     {
                         stack.push(scan.currentToken);
@@ -1540,7 +1425,6 @@ public class Parser {
                     break;
                 // if it is an operator, push it into the stack
                 case OPERATOR:
-
                     if (scan.currentToken.tokenStr.equals("~"))
                     {
                         Out.add(scan.currentToken);
@@ -1568,7 +1452,7 @@ public class Parser {
                 Out.add(stack.pop());
             }
 
-            res = evaluate(Out, true);
+            res = evaluate(Out);
             // if there is nothing between the commas
             if (res.value.equals("")) {
                 error("Empty expression between commas");
@@ -1793,7 +1677,7 @@ public class Parser {
             scan.getNext();                         //current token: '='
             scan.getNext();                         //current token: the beginning of the expression
             // assign any expression all the way to keyword 'to' to the cv variable + check exist
-            cv = assign(cv_token_str,expr("to", false));
+            cv = assign(cv_token_str,expr("to"));
         }
 
         //current token: 'TO'
@@ -1803,12 +1687,12 @@ public class Parser {
             //check missing limit or not
             if(scan.currentToken.tokenStr.equals("by"))
                 error("Missing 'LIMIT' expression for the loop");
-            limit = expr("by", false);         //curent token on "BY"
+            limit = expr("by");         //curent token on "BY"
             scan.getNext();                         //get first token of incr expr
             //check Missing incr or not
             if(scan.currentToken.tokenStr.equals(":"))
                 error("Missing 'INCREMENT' expression for the loop");
-            incr = expr(":", false);           //curent token on ":"
+            incr = expr(":");           //curent token on ":"
         }
         //else the end separator is :
         else{
@@ -1816,7 +1700,7 @@ public class Parser {
             //check missing limit or not
             if(scan.currentToken.tokenStr.equals(":"))
                 error("Missing 'LIMIT' expression for the loop");
-            limit = expr(":", false);           //current token on ":"
+            limit = expr(":");           //current token on ":"
             incr.value = "1";
             incr.type = SubClassif.INTEGER;
         }
