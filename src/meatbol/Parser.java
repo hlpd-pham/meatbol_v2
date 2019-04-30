@@ -1125,7 +1125,7 @@ public class Parser {
                         break;
                     case STRING:
                         operand.type = SubClassif.STRING;
-                        operand.structure = IdenClassif.EMPTY;
+                        operand.structure = IdenClassif.PRIMITIVE;
                         operand.value = Out.get(i).tokenStr;
                         operand.terminatingStr = "";
                         pstStack.push(operand);
@@ -2202,7 +2202,7 @@ public class Parser {
             }
             cv.value = cv1.value;
             cv.type = cv1.type;
-
+            cv.structure = cv1.structure;
             if (cv.type != arrayM.get(0).type)
                 error("The 'ITEM' variable: '%s' doesn't have the same type as the 'ARRAY'",cv_token_str);
 
@@ -2213,6 +2213,7 @@ public class Parser {
                     (index.value.equals("0"))){
                 cv.value = arrayM.get(0).value;
                 cv.type = arrayM.get(0).type;
+                cv.structure = arrayM.get(0).structure;
                 this.storageMgr.storage.put(cv_token_str,cv);
             }
 
@@ -2652,18 +2653,21 @@ public class Parser {
                                 break;
                             case FLOAT:
                                 temp = scan.currentToken.toResult();
-                                Utility.toFloat(this, temp);
+                                temp = Utility.toFloat(this, temp);
+                                temp.structure = IdenClassif.PRIMITIVE;
                                 arrayM.add(temp);
                                 break;
                             case INTEGER:
                                 temp = scan.currentToken.toResult();
-                                Utility.toInt(this, temp);
+                                temp = Utility.toInt(this, temp);
+                                temp.structure = IdenClassif.PRIMITIVE;
                                 arrayM.add(temp);
                                 break;
                             case STRING:
                             case BOOLEAN:
                             case DATE:
                                 temp = scan.currentToken.toResult();
+                                temp.structure = IdenClassif.PRIMITIVE;
                                 arrayM.add(temp);
                                 break;
                             default:
