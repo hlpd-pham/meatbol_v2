@@ -1091,6 +1091,25 @@ public class Utility {
         return res;
     }
 
+    public static ResultValue not (Parser parser, ResultValue res01) throws Exception{
+        ResultValue res = new ResultValue();
+        // if any of the result value is identifier then get the real value
+        if (res01.type == SubClassif.IDENTIFIER ){
+            res01 = parser.storageMgr.getVariable(parser,res01.value);      // replace op with the real value in storageManager
+        }
+
+        if (res01.type != SubClassif.BOOLEAN)
+            parser.error("'NOT' operation required the input argument to be of type 'BOOLEAN'");
+
+        res.type = SubClassif.BOOLEAN;
+        if(res01.value.equals("T"))
+            res.value = "F";
+        else
+            res.value = "T";
+
+        return res;
+    }
+
     public static ResultValue dateDiff(Parser parser, ResultValue res01, ResultValue res02) throws Exception{
          //Next leap year is 2020, happens every 4 years
         ResultValue res = new ResultValue();
