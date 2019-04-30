@@ -13,6 +13,8 @@ public class Expression {
         ResultValue op1 = new ResultValue();
         ResultValue op2 = new ResultValue();
 
+        boolean bArraySlice = false;
+
         for (int i = 0; i < Out.size(); i++) { //Loop through out, we need to make the postfix
             //System.out.printf("Expression: ||%s||  (%d/%d) is a %s\n",Out.get(i).value, i, Out.size()-1,Out.get(i).type.toString());
 
@@ -30,6 +32,14 @@ public class Expression {
                     tempArray = parser.storageMgr.getArray(parser, temp.value);
 
                 if (!resultStack.empty()) {
+
+                    // keep the token for doing array slicing;
+                    if (bArraySlice)
+                    {
+                        resultStack.push(temp);
+                        continue;
+                    }
+
                     ResultValue index = resultStack.pop();
                     try {
                         Utility.toInt(parser, index);
@@ -155,6 +165,7 @@ public class Expression {
                     resultStack.add(res);
                     break;
                 case "~":
+                    bArraySlice = true;
                     resultStack.push(temp);
                     break;
                 default:
@@ -369,12 +380,20 @@ public class Expression {
             {
                 // check subscript is integer
                 Utility.toInt(parser, resultStack.get(0));
-                Utility.toInt(parser, resultStack.get(2));
+
+                if (!(resultStack.get(2).structure == IdenClassif.UNBOUND_ARRAY ||
+                        resultStack.get(2).structure == IdenClassif.FIXED_ARRAY) )
+                    Utility.toInt(parser, resultStack.get(2));
 
                 res = new ResultValue();
                 res.value += resultStack.get(0).value;
                 res.value += resultStack.get(1).value;
-                res.value += resultStack.get(2).value;
+
+                if (!(resultStack.get(2).structure == IdenClassif.UNBOUND_ARRAY ||
+                        resultStack.get(2).structure == IdenClassif.FIXED_ARRAY) )
+                    res.value += resultStack.get(2).value;
+                else
+                    res.terminatingStr = resultStack.get(2).value;
                 res.type = SubClassif.ARRAY_SLICE;
                 return res;
             }

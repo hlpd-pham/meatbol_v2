@@ -2654,18 +2654,21 @@ public class Parser {
                                 break;
                             case FLOAT:
                                 temp = scan.currentToken.toResult();
-                                Utility.toFloat(this, temp);
+                                temp = Utility.toFloat(this, temp);
+                                temp.structure = IdenClassif.PRIMITIVE;
                                 arrayM.add(temp);
                                 break;
                             case INTEGER:
                                 temp = scan.currentToken.toResult();
-                                Utility.toInt(this, temp);
+                                temp = Utility.toInt(this, temp);
+                                temp.structure = IdenClassif.PRIMITIVE;
                                 arrayM.add(temp);
                                 break;
                             case STRING:
                             case BOOLEAN:
                             case DATE:
                                 temp = scan.currentToken.toResult();
+                                temp.structure = IdenClassif.PRIMITIVE;
                                 arrayM.add(temp);
                                 break;
                             default:
