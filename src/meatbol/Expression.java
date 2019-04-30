@@ -50,11 +50,11 @@ public class Expression {
                     }
                 }
                 else
-                    if (i == Out.size() - 1)
-                        parser.error("No element access when referencing array");
-                    else
-                        if (Out.get(i+1).type == SubClassif.BUILTIN)
-                            resultStack.push(temp);
+                if (i == Out.size() - 1)
+                    parser.error("No element access when referencing array");
+                else
+                if (Out.get(i+1).type == SubClassif.BUILTIN)
+                    resultStack.push(temp);
 
                 continue;
             }
@@ -224,6 +224,12 @@ public class Expression {
             res.value += resultStack.get(0).value;
             res.value += resultStack.get(1).value;
             res.type = SubClassif.ARRAY_SLICE;
+
+            // for array slice from source
+            if (Out.get(0).structure == IdenClassif.UNBOUND_ARRAY ||
+                    Out.get(0).structure == IdenClassif.FIXED_ARRAY)
+                res.terminatingStr = Out.get(0).value;
+
             return res;
         }
         // array slice
@@ -357,6 +363,7 @@ public class Expression {
                 return res;
 
             }
+
             // slicing for array
             else if (resultStack.size() == 3)
             {
