@@ -47,7 +47,10 @@ public class Expression {
                         resultStack.push(tempArray.get(iArrayIndex));
                     }
                     catch (ParserException e) {
-                        parser.error("index for accessing array must be an integer");
+                        parser.error("Index for accessing array must be an integer");
+                    }
+                    catch (IndexOutOfBoundsException ioe) {
+                        parser.error("Index '%s' is out of bound", index.value);
                     }
                 }
                 else
@@ -74,6 +77,9 @@ public class Expression {
                     resultStack.push(temp);
                     break;
                 case DATE:
+                    resultStack.push(temp);
+                    break;
+                case BOOLEAN:
                     resultStack.push(temp);
                     break;
                 case BUILTIN:
