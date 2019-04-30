@@ -41,11 +41,11 @@ public class Expression {
                     }
                 }
                 else
-                    if (i == Out.size() - 1)
-                        parser.error("No element access when referencing array");
-                    else
-                        if (Out.get(i+1).type == SubClassif.BUILTIN)
-                            resultStack.push(temp);
+                if (i == Out.size() - 1)
+                    parser.error("No element access when referencing array");
+                else
+                if (Out.get(i+1).type == SubClassif.BUILTIN)
+                    resultStack.push(temp);
 
                 continue;
             }
@@ -195,10 +195,33 @@ public class Expression {
                 res.value = String.valueOf(temp);
                 return res;
             }
-            // array slice
-            else {
-                // case 1: arrayM[op1~op2]
-                if (resultStack.size() == 4)
+
+
+            res.value += resultStack.get(0).value;
+            res.value += resultStack.get(1).value;
+            res.type = SubClassif.ARRAY_SLICE;
+
+            // for array slice from source
+            if (Out.get(0).structure == IdenClassif.UNBOUND_ARRAY ||
+                    Out.get(0).structure == IdenClassif.FIXED_ARRAY)
+                res.terminatingStr = Out.get(0).value;
+
+            return res;
+        }
+        // array slice
+        else {
+            // case 1: arrayM[op1~op2]
+            if (resultStack.size() == 4)
+            {
+                // check subscript is integer
+                Utility.toInt(parser, resultStack.get(0));
+                Utility.toInt(parser, resultStack.get(2));
+
+                // array slice for string
+                if (resultStack.get(0).type == SubClassif.INTEGER &&
+                        resultStack.get(2).type == SubClassif.INTEGER  &&
+                        resultStack.get(1).type == SubClassif.ARRAY_SLICE &&
+                        resultStack.get(3).type == SubClassif.STRING)
                 {
                     // array slice for string
                     if (resultStack.get(0).type == SubClassif.INTEGER &&
@@ -320,6 +343,24 @@ public class Expression {
 
             }
 
+            // slicing for array
+            else if (resultStack.size() == 3)
+            {
+                // check subscript is integer
+                Utility.toInt(parser, resultStack.get(0));
+                Utility.toInt(parser, resultStack.get(2));
+
+                res = new ResultValue();
+                res.value += resultStack.get(0).value;
+                res.value += resultStack.get(1).value;
+                res.value += resultStack.get(2).value;
+                res.type = SubClassif.ARRAY_SLICE;
+                return res;
+            }
+
+        }
+
+
         return op1;
     }
     public int precedence(Parser parser) throws Exception {
@@ -391,4 +432,3 @@ public class Expression {
         }
     }
 }
-
