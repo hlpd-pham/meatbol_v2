@@ -138,7 +138,7 @@ public class Parser {
                     // get array index
                     int iArrayIndex = Integer.parseInt(arrayIndex.value);
 
-                    // target subsript cannot be < 0
+                    // target subscript cannot be < 0
                     if (iArrayIndex < 0)
                         error("Target subsript cannot be lower than 0. Found '%d'", iArrayIndex);
 
@@ -1226,7 +1226,7 @@ public class Parser {
      */
     public ResultValue evalCond() throws Exception
     {
-        String sLogicOperands = "<,>,<=,>=,!=,and,or,==";
+        String sLogicOperands = "<,>,<=,>=,!=,and,or,==,not";
         String logicalOperator;
         // begin on the first token of the expression
         scan.getNext();
@@ -1236,7 +1236,10 @@ public class Parser {
         ResultValue rightRes = new ResultValue();
 
         //System.out.printf("Current Token before evalconds: %s\n", scan.currentToken.tokenStr);
-        leftRes = expr(sLogicOperands, false);
+        // not is just 1 operator so it doesn't have left op
+        if (!(scan.currentToken.tokenStr.equals("not")))
+            leftRes = expr(sLogicOperands, false);
+
 
         //System.out.printf("Should be the logic in evalconds: %s\n", scan.currentToken.tokenStr);
         logicalOperator = scan.currentToken.tokenStr;
@@ -1263,6 +1266,8 @@ public class Parser {
             case "!=":
                 res = Utility.nEqui(this, leftRes, rightRes);
                 break;
+            case "not":
+                res = Utility.not(this,rightRes);
             default:
                 // TODO error
                 break;
