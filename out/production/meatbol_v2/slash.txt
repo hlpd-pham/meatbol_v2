@@ -1,36 +1,97 @@
-// Expressions
-print("p4Expr.txt");
-Int two = 2;
-Int three = 3;
-Int four = 4;
-Int five = 5;
-print("constants: 3 + 4 * 5 =", 3+4*5);
-print("variables: 3 + 4 * 5 =", three+four*five);
+String a;
 
-print("constants: 2 * 3 + 4 =", 2 * 3 + 4);
-print("mix: 2* 3 + 4 =", 2 * three + 4);
+for a in "Con heo":
+    print(a);
+    endfor;
 
-print("12 / 4 * 3 = ", 12 / 4 * three);
 
-print("4 + (5 - 6) * 2 =", 4 + (5 - 6) * 2 );
+print("Unsorted array");
+Int iDM[20] = 60,30,20,10,5,50,70,25,35,45,15;
 
-print("2 ^ 2 ^ 3 = ", 2 ^ 2 ^ 3);
 
-print("two + (12-4*2/4) - 1 =", two + (12-4*2/4) - 1);
+Int iTemp;
+for iTemp in iDM:
+    print("\t", iTemp);
+endfor;
 
-if three*four > four+five:
-    print("right:", three*four, ">", 4+5);
-else:
-    print("wrong:", three*four, ">", 4+5,  "should be T");
-endif;
+print("ITEM:      ",iTemp);
 
-if "1" # "2" > 4+5:
-    print("wrong: string", "1" # "2", ">", 4+5, "should be F");
-else:
-    print("right: string", "1" # "2", ">", 4+5);
-endif;
-String strA = "Climb";
-String strB = "every";
-String strC;
-strC = strA # " " # strB # " mountain";
-print("strC is", strC);
+//Int k;
+//Int a = 3;
+//Int j;
+//Int b;
+
+//String a = "con ga";
+//for i in a:
+//    print (i);
+//    i = i#"_";
+//endfor;
+
+//print (a);
+//
+//   for a=0 to 15:
+//           for j=0 to (3+2)*2 by 1:
+//               print("a=    ", a ,"j=    ",j);
+//               j = j+1;
+//               a = a +2;
+//           endfor;
+//           print ("AAAAAAAA");
+//    endfor;
+//    print ("hu hon cai lon con nguyen");
+//
+
+Int iCM[10] = 10, 20, 30, 40, 50, 60;
+Int iFM[] = 10, 20, 30;
+
+for iVal in iCM:
+    print(iVal);
+    iVal = iVal+5;
+endfor;
+
+print("-----------------");
+
+
+for e in iCM:
+    print(e);
+    endfor;
+
+print("-----------------");
+
+// for loops
+print("for loop for val in iCM");
+
+for iVal in iCM:
+    print("\t", iVal);
+    for iival in iFM:
+        print(iival);
+        iival = iival+1;
+    endfor;
+endfor;
+
+print("-----------------");
+Int a = 1000;
+for a in iFM:
+    print(a);
+    endfor;
+
+
+
+
+
+
+//Testing STRING LOOP
+//String b = "con" # "meo";
+//String c = "ngu";
+//print(b#" beo");
+//String a = "b";
+
+//for a in b:
+//print("    ",a);
+//a = a# "^ ";
+//    for d in c:
+//        print(d);
+//endfor;
+//endfor;
+//print(b);
+//print(a);
+
