@@ -1125,7 +1125,7 @@ public class Parser {
                         break;
                     case STRING:
                         operand.type = SubClassif.STRING;
-                        operand.structure = IdenClassif.EMPTY;
+                        operand.structure = IdenClassif.PRIMITIVE;
                         operand.value = Out.get(i).tokenStr;
                         operand.terminatingStr = "";
                         pstStack.push(operand);
@@ -2202,7 +2202,7 @@ public class Parser {
             }
             cv.value = cv1.value;
             cv.type = cv1.type;
-
+            cv.structure = cv1.structure;
             if (cv.type != arrayM.get(0).type)
                 error("The 'ITEM' variable: '%s' doesn't have the same type as the 'ARRAY'",cv_token_str);
 
@@ -2213,6 +2213,7 @@ public class Parser {
                     (index.value.equals("0"))){
                 cv.value = arrayM.get(0).value;
                 cv.type = arrayM.get(0).type;
+                cv.structure = arrayM.get(0).structure;
                 this.storageMgr.storage.put(cv_token_str,cv);
             }
 
@@ -2253,6 +2254,7 @@ public class Parser {
                         ResultValue temp = this.storageMgr.getVariable(this, cv_token_str);
                         cv.type = temp.type;
                         cv.value = temp.value;
+                        cv.structure = temp.structure;
                         dummy_arrayM.add(Integer.parseInt(index.value),cv);
 //                        System.out.println("Dummy array "+ dummy_arrayM.get(0).value);
                         this.storageMgr.replaceArray(this, dummy_key, dummy_arrayM);

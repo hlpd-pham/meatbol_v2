@@ -6,6 +6,7 @@
       <change beforePath="$PROJECT_DIR$/out/production/meatbol_v2/meatbol/Parser$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/meatbol_v2/meatbol/Parser$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/meatbol_v2/meatbol/Parser.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/meatbol_v2/meatbol/Parser.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/meatbol/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/meatbol/Parser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/p4Array.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/p4Array.txt" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -19,8 +20,17 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/meatbol/Parser.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="109">
-              <caret line="1955" column="39" selection-start-line="1955" selection-start-column="39" selection-end-line="1955" selection-end-column="39" />
+            <state relative-caret-position="138">
+              <caret line="1303" selection-start-line="1303" selection-end-line="1303" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/slash.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="187">
+              <caret line="11" column="10" lean-forward="true" selection-start-line="11" selection-start-column="10" selection-end-line="11" selection-end-column="10" />
             </state>
           </provider>
         </entry>
@@ -37,8 +47,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/p4Array.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="63" column="19" lean-forward="true" selection-start-line="63" selection-start-column="11" selection-end-line="63" selection-end-column="19" />
+            <state relative-caret-position="476">
+              <caret line="49" lean-forward="true" selection-start-line="49" selection-end-line="49" />
             </state>
           </provider>
         </entry>
@@ -66,6 +76,7 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/src/meatbol/Parser.java" />
+        <option value="$PROJECT_DIR$/src/p4Array.txt" />
       </list>
     </option>
   </component>
@@ -106,7 +117,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1556608686654" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1556611653720" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -146,8 +157,8 @@
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1295" height="735" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49876544" visible="true" weight="0.14331985" />
-      <window_info id="Structure" order="1" sideWeight="0.5012346" side_tool="true" visible="true" weight="0.14331985" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49723756" visible="true" weight="0.14331985" />
+      <window_info id="Structure" order="1" sideWeight="0.50276244" side_tool="true" visible="true" weight="0.14331985" />
       <window_info id="Capture Tool" order="2" />
       <window_info id="Image Layers" order="3" />
       <window_info id="Designer" order="4" />
@@ -155,8 +166,8 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3283582" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.3283582" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.39966834" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -174,7 +185,38 @@
       <window_info anchor="right" id="Palette&#9;" order="7" />
     </layout>
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/meatbol/Parser.java</url>
+          <line>2366</line>
+          <properties />
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/meatbol/Parser.java</url>
+          <line>1904</line>
+          <properties />
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="Application">
+        <watch expression="scan.currentToken" language="JAVA" />
+        <watch expression="this.storageMgr.storageM" language="JAVA" />
+      </configuration>
+    </watches-manager>
+  </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/p4Array.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="476">
+          <caret line="49" lean-forward="true" selection-start-line="49" selection-end-line="49" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/meatbol/Expression.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
@@ -182,10 +224,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/slash.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" column="10" lean-forward="true" selection-start-line="11" selection-start-column="10" selection-end-line="11" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/meatbol/Parser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="109">
-          <caret line="1955" column="39" selection-start-line="1955" selection-start-column="39" selection-end-line="1955" selection-end-column="39" />
+        <state relative-caret-position="138">
+          <caret line="1303" selection-start-line="1303" selection-end-line="1303" />
         </state>
       </provider>
     </entry>

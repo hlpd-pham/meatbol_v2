@@ -48,8 +48,9 @@ for k = 0 to ELEM(iCM) by 2:
     print("\t", iCM[k]);
 endfor;
 
-print("Unsorted array");
 Int iDM[20] = 60,30,20,10,5,50,70,25,35,45,15;
+
+print("Unsorted array");
 Int iTemp;
 for iTemp in iDM:
     print("\t", iTemp);
