@@ -389,7 +389,7 @@ public class Expression {
                 res.value += resultStack.get(0).value;
                 res.value += resultStack.get(1).value;
 
-                if (!(resultStack.get(2).structure == IdenClassif.UNBOUND_ARRAY &&
+                if (!(resultStack.get(2).structure == IdenClassif.UNBOUND_ARRAY ||
                         resultStack.get(2).structure == IdenClassif.FIXED_ARRAY) )
                     res.value += resultStack.get(2).value;
                 else
