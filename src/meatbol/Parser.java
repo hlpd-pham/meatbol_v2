@@ -1839,10 +1839,13 @@ public class Parser {
     } // END OF WHILE STATEMENT
 
     /**
-     *
-     * @param bExec
-     * @param debug
-     * @throws Exception
+     *For Statement: take in a boolean argument and pass on to sub classification of for loop:
+     * <p>
+     *     This function's main purpose is to determine which type of loop we are dealing with,
+     *     pass on the correct argument value for the subclassification loop to execute
+     * @param bExec     -   the boolean value to indicate whether or not we are going to exec this loop
+     * @param debug     -   the debugger for debugging purposes
+     * @throws Exception-   ParserException
      */
     public ResultValue forStmt(boolean bExec, Debugger debug) throws Exception{
         // saveLineNr for error handling and go back
@@ -1885,11 +1888,15 @@ public class Parser {
 
 
     /**
+     *For In loop: a sub-classification of for loop:
+     * <p>
+     *     This function will take care of the for in type of loop
+     *     This function will deal with array collection or a String variable (we can see this as the generic char array)
      *
-     * @param bExec
-     * @param debug
+     * @param bExec     -   the boolean value to indicate whether or not we are going to exec this loop
+     * @param debug     -   the debugger for debugging purposes
      * @return
-     * @throws Exception
+     * @throws Exception-   ParserException
      */
     public ResultValue forInStmt(boolean bExec, Debugger debug)throws Exception{
         /*NOTE:
@@ -2356,11 +2363,16 @@ public class Parser {
     }// END OF FOR IN STATEMENT
 
     /**
-     *
-     * @param bExec
-     * @param debug
-     * @param by
-     * @throws Exception
+     *For To loop: a sub-classification of for loop:
+     * <p>
+     *      This function will take care of the for to type of loop
+     *      This function will deal counting variable, manipulating indexes
+     *           to access different type of element inside a collection or simply just a normal counting loop
+     * @param bExec     -   the boolean value to indicate whether or not we are going to exec this loop
+     * @param debug     -   the debugger for debugging purposes
+     * @param by        -   a boolean value to indicate if we are having the incr argument
+     * @return
+     * @throws Exception-   ParserException
      */
     public ResultValue forToStmt(boolean bExec, Debugger debug, boolean by)throws Exception{
         ResultValue limit = new ResultValue();
