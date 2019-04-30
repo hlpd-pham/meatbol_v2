@@ -1947,195 +1947,8 @@ public class Parser {
         }
 
         // if the token it self is a string or a var with subclass String
-        if((scan.currentToken.subClassif == SubClassif.STRING)||
-                (collection_token.type == SubClassif.STRING))
-        {
-            //TODO: STRING LITERAL OR STRIG VAR LOOP
-            //Evaluate the expression
-            ResultValue collection = new ResultValue();
-            collection = expr(":",false);         //token: ":"
 
-            //========================================================================
-            //EXPLAIN: Behind the scene, we use index to access everything
-            // so this should be very familiar with FOR TO loop
-            //========================================================================
-
-            // CREATING INDEX FOR EACH ITEM IN THE ARRAY
-            //  - STORE USING LINE NUMBER (SIMILAR TO FOR-TO)
-            //  - IF EXIST: RETRIEVE
-            //  - ELSE: CREATE AND INIT TO 0
-            ResultValue index = new ResultValue();
-            try{
-                index = this.storageMgr.getVariable(this,Integer.toString(saveLineNr));
-
-            }catch(Exception e){
-                // if doesn't exist initialized it with new index
-                index.value = "0";
-                index.type = SubClassif.INTEGER;
-                this.storageMgr.storage.put(Integer.toString(saveLineNr),index);
-            }
-
-            // CREATING LIMIT:
-            //  - TYPE: INT
-            //  - VALUE: THE LENGTH OF WHAT EVER IN COLLECTION
-            ResultValue limit = new ResultValue();
-            limit.type = SubClassif.INTEGER;
-            limit.value = Integer.toString(collection.value.length());
-
-            // CREATING INCR:
-            //  - TYPE: INT
-            //  - VALUE: 1
-            ResultValue incr = new ResultValue();
-            incr.type = SubClassif.INTEGER;
-            incr.value = "1";
-
-            //****** IMPORTANT NOTE: FOR IN WILL NOT LET OUTSIDE VAR AFFECT ITERATION
-            // create a temporary place on the storage manager to store the original value
-            // after finish execute, we pop back (like save on the stack and pop)
-            try{
-                this.storageMgr.storage.put("1"+cv_token_str,this.storageMgr.getVariable(this,cv_token_str));
-            }catch(Exception e){}
-
-            //CHECK IF CV EXIST, IF NOT THEN CREATE IT WITH THE ARRAY'S DATA TYPE
-            try{
-                //EXIST:    -   retrieve
-                //          -   check data type
-                cv = storageMgr.getVariable(this,cv_token_str);
-            }
-            //if fail then we declare
-            catch (Exception e){
-                //NOT EXIST -   create the variable
-                //          -   assign with the first char of collection
-                ResultValue temp = new ResultValue();
-                temp.value = Character.toString(collection.value.toCharArray()[0]);
-                temp.type = SubClassif.STRING;
-
-                this.storageMgr.storage.put(cv_token_str,temp);
-            }
-            if (cv.type != SubClassif.STRING )
-                error("The 'ITEM' variable: '%s' have to be String type",cv_token_str);
-
-            //*** WE WANT LAST ITERATION VALUE CARRY OUTSIDE THE LOOP BUT NOT FOR NEXT ITERATION
-            // ==> every iteration: check if the first spot has the correct original character
-            //                      if not then restore it
-            if ((cv.value != Character.toString(collection.value.toCharArray()[0]))&&
-                    (index.value.equals("0")))
-                cv.value = Character.toString(collection.value.toCharArray()[0]);
-
-
-            // CREATING A DUMMY COLLECTION: for case that the use alter the element
-            ResultValue dummy_collection = new ResultValue();
-            String dummy_key = Integer.toString(saveLineNr)+"a";
-            try{
-                dummy_collection = this.storageMgr.getVariable(this,dummy_key);
-            }catch (Exception e){
-                dummy_collection.type = SubClassif.STRING;
-                dummy_collection.value = "";
-                this.storageMgr.storage.put(dummy_key,dummy_collection);
-            }
-
-            //EXECUTE
-            if(bExec){
-                //EXECUTE BLOCK:
-
-                ResultValue resCond = new ResultValue();
-                resCond = Utility.less(this, index, limit);
-                if(resCond.value.equals("T") ) {
-                    ResultValue res = executeStatements(true);
-
-                    //update cv, index and store them back to the storage manager
-                    //update index
-                    index.value = String.valueOf(Integer.parseInt(index.value) + Integer.parseInt(incr.value));
-                    this.storageMgr.replace(this,Integer.toString(saveLineNr),index);
-
-                    //update cv
-                    ResultValue temp = new ResultValue();
-                    //Just in case we have an array out of bound
-                    // (I can check for it but try catch is easier than having to deal with all the conversion)
-                    try{
-                        //AT THIS STEP:
-                        // dummy collection will concat with the currently changed cv (if user choose to change anything)
-                        // cv will get reset to the next item according to the original String collection
-
-                        //update dummy_collection
-                        dummy_collection.value = dummy_collection.value +this.storageMgr.getVariable(this,cv_token_str).value;
-                        this.storageMgr.replace(this,dummy_key,dummy_collection);
-
-                        //update cv based on the original String collection
-                        temp.value = Character.toString(collection.value.toCharArray()[Integer.parseInt(index.value)]);
-                        temp.type = SubClassif.STRING;
-
-                        this.storageMgr.replace(this,cv_token_str,temp);
-
-                    }catch (ArrayIndexOutOfBoundsException e){ }
-
-
-                    //After executing: check if it has end for
-                    if(!(scan.currentToken.tokenStr.equals("endfor")))
-                    {
-                        error("Expected 'endfor' for a 'for' beginning line '%d'", saveLineNr);
-                    }
-                    if(!(scan.nextToken.tokenStr.equals(";")))
-                    {
-                        error("Expected ‘;’ after ‘endfor’");
-                    }
-                    scan.iSourceLineNr = saveLineNr -1 ;
-                }else {
-                    ResultValue resTemp = executeStatements(false);
-                    // when the loop is done or fail:
-                    //  - remove the counting var instance in that loop (like a scope of the cv)
-                    //  - remove the dummy collection
-                    //  - remove the cv
-                    this.storageMgr.storage.remove(Integer.toString(saveLineNr));
-                    if(collection_token.type == SubClassif.STRING)
-                        collection.value = dummy_collection.value;
-                    this.storageMgr.storage.remove(dummy_key);
-                    this.storageMgr.storage.remove(cv_token_str);
-                    try{
-                        this.storageMgr.storage.put(cv_token_str,this.storageMgr.getVariable(this,"1"+cv_token_str));
-                        this.storageMgr.storage.remove("1"+cv_token_str);
-                    }catch (Exception e){}
-
-                    //After executing: check if it has end for
-                    if(!(scan.currentToken.tokenStr.equals("endfor")))
-                    {
-                        error("Expected 'endfor' for a 'for' beginning line '%d'", saveLineNr);
-                    }
-                    if(!(scan.getNext().equals(";")))
-                    {
-                        error("Expected ‘;’ after ‘endfor’");
-                    }
-                }
-                return resCond;
-            }
-            //NO EXECUTE BLOCK
-            else {
-                ResultValue resTemp = executeStatements(false);
-                // when the loop is done or fail:
-                //  - remove the counting var instance in that loop (like a scope of the cv)
-                //  - remove the dummy collection
-                //  - remove the cv                this.storageMgr.storage.remove(Integer.toString(saveLineNr));
-                if(collection_token.type == SubClassif.STRING)
-                    collection.value = dummy_collection.value;
-                this.storageMgr.storage.remove(dummy_key);
-                this.storageMgr.storage.remove(cv_token_str);
-                try{
-                    this.storageMgr.storage.put(cv_token_str,this.storageMgr.getVariable(this,"1"+cv_token_str));
-                    this.storageMgr.storage.remove("1"+cv_token_str);
-                }catch (Exception e){}
-
-                //After executing: check if it has end for
-                if (!(scan.currentToken.tokenStr.equals("endfor"))) {
-                    error("Expected 'endfor' for a 'for' beginning line '%d'", saveLineNr);
-                }
-                if (!(scan.getNext().equals(";"))) {
-                    error("Expected ‘;’ after ‘endfor’");
-                }
-                return resTemp;
-
-            }
-        }
-        else if((collection_token.structure == IdenClassif.UNBOUND_ARRAY)||
+        if((collection_token.structure == IdenClassif.UNBOUND_ARRAY)||
                 (collection_token.structure == IdenClassif.FIXED_ARRAY)) {
             //TODO: ARRAY LOOP
             // MODIFY THIS CHECK EXIST DOWN HERE FOR ARRAY
@@ -2343,6 +2156,194 @@ public class Parser {
                     error("Expected ‘;’ after ‘endfor’");
                 }
                 return resTemp;
+            }
+        }
+        else if((scan.currentToken.subClassif == SubClassif.STRING)||
+                (collection_token.type == SubClassif.STRING))
+        {
+            //TODO: STRING LITERAL OR STRIG VAR LOOP
+            //Evaluate the expression
+            ResultValue collection = new ResultValue();
+            collection = expr(":",false);         //token: ":"
+
+            //========================================================================
+            //EXPLAIN: Behind the scene, we use index to access everything
+            // so this should be very familiar with FOR TO loop
+            //========================================================================
+
+            // CREATING INDEX FOR EACH ITEM IN THE ARRAY
+            //  - STORE USING LINE NUMBER (SIMILAR TO FOR-TO)
+            //  - IF EXIST: RETRIEVE
+            //  - ELSE: CREATE AND INIT TO 0
+            ResultValue index = new ResultValue();
+            try{
+                index = this.storageMgr.getVariable(this,Integer.toString(saveLineNr));
+
+            }catch(Exception e){
+                // if doesn't exist initialized it with new index
+                index.value = "0";
+                index.type = SubClassif.INTEGER;
+                this.storageMgr.storage.put(Integer.toString(saveLineNr),index);
+            }
+
+            // CREATING LIMIT:
+            //  - TYPE: INT
+            //  - VALUE: THE LENGTH OF WHAT EVER IN COLLECTION
+            ResultValue limit = new ResultValue();
+            limit.type = SubClassif.INTEGER;
+            limit.value = Integer.toString(collection.value.length());
+
+            // CREATING INCR:
+            //  - TYPE: INT
+            //  - VALUE: 1
+            ResultValue incr = new ResultValue();
+            incr.type = SubClassif.INTEGER;
+            incr.value = "1";
+
+            //****** IMPORTANT NOTE: FOR IN WILL NOT LET OUTSIDE VAR AFFECT ITERATION
+            // create a temporary place on the storage manager to store the original value
+            // after finish execute, we pop back (like save on the stack and pop)
+            try{
+                this.storageMgr.storage.put("1"+cv_token_str,this.storageMgr.getVariable(this,cv_token_str));
+            }catch(Exception e){}
+
+            //CHECK IF CV EXIST, IF NOT THEN CREATE IT WITH THE ARRAY'S DATA TYPE
+            try{
+                //EXIST:    -   retrieve
+                //          -   check data type
+                cv = storageMgr.getVariable(this,cv_token_str);
+            }
+            //if fail then we declare
+            catch (Exception e){
+                //NOT EXIST -   create the variable
+                //          -   assign with the first char of collection
+                ResultValue temp = new ResultValue();
+                temp.value = Character.toString(collection.value.toCharArray()[0]);
+                temp.type = SubClassif.STRING;
+
+                this.storageMgr.storage.put(cv_token_str,temp);
+            }
+            if (cv.type != SubClassif.STRING )
+                error("The 'ITEM' variable: '%s' have to be String type",cv_token_str);
+
+            //*** WE WANT LAST ITERATION VALUE CARRY OUTSIDE THE LOOP BUT NOT FOR NEXT ITERATION
+            // ==> every iteration: check if the first spot has the correct original character
+            //                      if not then restore it
+            if ((cv.value != Character.toString(collection.value.toCharArray()[0]))&&
+                    (index.value.equals("0")))
+                cv.value = Character.toString(collection.value.toCharArray()[0]);
+
+
+            // CREATING A DUMMY COLLECTION: for case that the use alter the element
+            ResultValue dummy_collection = new ResultValue();
+            String dummy_key = Integer.toString(saveLineNr)+"a";
+            try{
+                dummy_collection = this.storageMgr.getVariable(this,dummy_key);
+            }catch (Exception e){
+                dummy_collection.type = SubClassif.STRING;
+                dummy_collection.value = "";
+                this.storageMgr.storage.put(dummy_key,dummy_collection);
+            }
+
+            //EXECUTE
+            if(bExec){
+                //EXECUTE BLOCK:
+
+                ResultValue resCond = new ResultValue();
+                resCond = Utility.less(this, index, limit);
+                if(resCond.value.equals("T") ) {
+                    ResultValue res = executeStatements(true);
+
+                    //update cv, index and store them back to the storage manager
+                    //update index
+                    index.value = String.valueOf(Integer.parseInt(index.value) + Integer.parseInt(incr.value));
+                    this.storageMgr.replace(this,Integer.toString(saveLineNr),index);
+
+                    //update cv
+                    ResultValue temp = new ResultValue();
+                    //Just in case we have an array out of bound
+                    // (I can check for it but try catch is easier than having to deal with all the conversion)
+                    try{
+                        //AT THIS STEP:
+                        // dummy collection will concat with the currently changed cv (if user choose to change anything)
+                        // cv will get reset to the next item according to the original String collection
+
+                        //update dummy_collection
+                        dummy_collection.value = dummy_collection.value +this.storageMgr.getVariable(this,cv_token_str).value;
+                        this.storageMgr.replace(this,dummy_key,dummy_collection);
+
+                        //update cv based on the original String collection
+                        temp.value = Character.toString(collection.value.toCharArray()[Integer.parseInt(index.value)]);
+                        temp.type = SubClassif.STRING;
+
+                        this.storageMgr.replace(this,cv_token_str,temp);
+
+                    }catch (ArrayIndexOutOfBoundsException e){ }
+
+
+                    //After executing: check if it has end for
+                    if(!(scan.currentToken.tokenStr.equals("endfor")))
+                    {
+                        error("Expected 'endfor' for a 'for' beginning line '%d'", saveLineNr);
+                    }
+                    if(!(scan.nextToken.tokenStr.equals(";")))
+                    {
+                        error("Expected ‘;’ after ‘endfor’");
+                    }
+                    scan.iSourceLineNr = saveLineNr -1 ;
+                }else {
+                    ResultValue resTemp = executeStatements(false);
+                    // when the loop is done or fail:
+                    //  - remove the counting var instance in that loop (like a scope of the cv)
+                    //  - remove the dummy collection
+                    //  - remove the cv
+                    this.storageMgr.storage.remove(Integer.toString(saveLineNr));
+                    if(collection_token.type == SubClassif.STRING)
+                        collection.value = dummy_collection.value;
+                    this.storageMgr.storage.remove(dummy_key);
+                    this.storageMgr.storage.remove(cv_token_str);
+                    try{
+                        this.storageMgr.storage.put(cv_token_str,this.storageMgr.getVariable(this,"1"+cv_token_str));
+                        this.storageMgr.storage.remove("1"+cv_token_str);
+                    }catch (Exception e){}
+
+                    //After executing: check if it has end for
+                    if(!(scan.currentToken.tokenStr.equals("endfor")))
+                    {
+                        error("Expected 'endfor' for a 'for' beginning line '%d'", saveLineNr);
+                    }
+                    if(!(scan.getNext().equals(";")))
+                    {
+                        error("Expected ‘;’ after ‘endfor’");
+                    }
+                }
+                return resCond;
+            }
+            //NO EXECUTE BLOCK
+            else {
+                ResultValue resTemp = executeStatements(false);
+                // when the loop is done or fail:
+                //  - remove the counting var instance in that loop (like a scope of the cv)
+                //  - remove the dummy collection
+                //  - remove the cv                this.storageMgr.storage.remove(Integer.toString(saveLineNr));
+                if(collection_token.type == SubClassif.STRING)
+                    collection.value = dummy_collection.value;
+                this.storageMgr.storage.remove(dummy_key);
+                this.storageMgr.storage.remove(cv_token_str);
+                try{
+                    this.storageMgr.storage.put(cv_token_str,this.storageMgr.getVariable(this,"1"+cv_token_str));
+                    this.storageMgr.storage.remove("1"+cv_token_str);
+                }catch (Exception e){}
+
+                //After executing: check if it has end for
+                if (!(scan.currentToken.tokenStr.equals("endfor"))) {
+                    error("Expected 'endfor' for a 'for' beginning line '%d'", saveLineNr);
+                }
+                if (!(scan.getNext().equals(";"))) {
+                    error("Expected ‘;’ after ‘endfor’");
+                }
+                return resTemp;
+
             }
         }
         else{

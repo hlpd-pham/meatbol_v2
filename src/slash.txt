@@ -1,19 +1,22 @@
+Int iDM[20] = 60,30,20,10,5,50,70,25,35,45,15;
+
 String a;
 
 for a in "Con heo":
     print(a);
     endfor;
 
-
+Int iRM [5] = 1,2,3,4;
 print("Unsorted array");
-Int iDM[20] = 60,30,20,10,5,50,70,25,35,45,15;
 
 
 Int iTemp;
 for iTemp in iDM:
     print("\t", iTemp);
+    iTemp = iTemp +10;
 endfor;
 
+Int iUM[8] = 1,3,4,2;
 print("ITEM:      ",iTemp);
 
 //Int k;
