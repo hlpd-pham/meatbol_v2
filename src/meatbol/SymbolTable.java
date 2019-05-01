@@ -52,6 +52,11 @@ public class SymbolTable
         ht.put("while", new STControl("while",Classif.CONTROL,SubClassif.FLOW));
         ht.put("endwhile", new STControl("endwhile", Classif.CONTROL, SubClassif.END));
 
+        // break/continue statements
+        ht.put("break", new STControl("break", Classif.CONTROL, SubClassif.FLOW));
+        ht.put("continue", new STControl("continue", Classif.CONTROL, SubClassif.FLOW));
+
+
         // declare tokens
         ht.put("Int", new STControl("Int",Classif.CONTROL,SubClassif.DECLARE));
         ht.put("Float", new STControl("Float",Classif.CONTROL,SubClassif.DECLARE));
