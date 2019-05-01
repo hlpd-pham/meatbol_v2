@@ -56,6 +56,8 @@ for iTemp in iDM:
     print("\t", iTemp);
 endfor;
 
+//Int iDM[20] = 60,30,20,10,5,50,70,25,35,45,15;
+
 print("Nested for loops, sorting the array");
 Bool bChange;
 Int j;
@@ -71,7 +73,8 @@ for i=0 to ELEM(iDM)-1:
     endfor;
     if not bChange:
         print("\tready to leave, i=", i);
-        // break;
+        //break;
+        print("AAAAAAAAA");
     endif;
 endfor; 
 print("sorted array");

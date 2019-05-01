@@ -1090,7 +1090,6 @@ public class Utility {
         res.type = SubClassif.INTEGER;
         return res;
     }
-
     public static ResultValue not (Parser parser, ResultValue res01) throws Exception{
         ResultValue res = new ResultValue();
         // if any of the result value is identifier then get the real value
@@ -1209,6 +1208,7 @@ public class Utility {
         return res;
     }
 
+    
     public static ResultValue dateDiff(Parser parser, ResultValue res01, ResultValue res02) throws Exception{
          //Next leap year is 2020, happens every 4 years
         ResultValue res = new ResultValue();

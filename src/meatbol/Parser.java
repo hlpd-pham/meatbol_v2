@@ -1918,7 +1918,7 @@ public class Parser {
                     stack.push(scan.currentToken);
                     break;
                 default:
-                    //TODO error?
+                    // TODO error?
                     break;
             }
         }
