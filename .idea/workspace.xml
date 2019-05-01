@@ -3,7 +3,14 @@
   <component name="ChangeListManager">
     <list default="true" id="6f40d4e9-6544-4090-9c96-b63e2e9fd9cb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/meatbol_v2/meatbol/Expression$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/meatbol_v2/meatbol/Expression$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/meatbol_v2/meatbol/Expression.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/meatbol_v2/meatbol/Expression.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/meatbol_v2/meatbol/Parser$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/meatbol_v2/meatbol/Parser$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/meatbol_v2/meatbol/Parser.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/meatbol_v2/meatbol/Parser.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/meatbol_v2/meatbol/Utility.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/meatbol_v2/meatbol/Utility.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/meatbol_v2/slash.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/meatbol_v2/slash.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/meatbol/Utility.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/meatbol/Utility.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/slash.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/slash.txt" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -13,21 +20,12 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/meatbol/Parser.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="232">
-              <caret line="2376" column="91" selection-start-line="2376" selection-start-column="91" selection-end-line="2376" selection-end-column="91" />
-              <folding>
-                <element signature="method#ifStmt#0;class#Parser#0" />
-                <element signature="method#whileStmt#0;class#Parser#0" />
-                <element signature="method#forStmt#0;class#Parser#0" />
-                <element signature="method#forInStmt#0;class#Parser#0" />
-                <element signature="e#93906#103967#1" />
-                <element signature="e#95072#104137#1" />
-                <element signature="method#forToStmt#0;class#Parser#0" />
-              </folding>
+            <state relative-caret-position="143">
+              <caret line="1446" column="16" selection-start-line="1446" selection-start-column="16" selection-end-line="1451" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -35,8 +33,13 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/meatbol/Utility.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="476">
-              <caret line="1109" column="19" selection-start-line="1109" selection-start-column="19" selection-end-line="1109" selection-end-column="19" />
+            <state relative-caret-position="153">
+              <caret line="1210" column="4" selection-start-line="1210" selection-start-column="4" selection-end-line="1210" selection-end-column="4" />
+              <folding>
+                <element signature="e#50156#50866#0" />
+                <element signature="e#50872#52896#0" />
+                <element signature="e#52902#55070#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -44,8 +47,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/slash.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-612">
-              <caret line="15" column="22" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="22" />
+            <state relative-caret-position="51">
+              <caret line="3" column="6" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -62,8 +65,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/p4Array.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-96">
-              <caret line="50" column="46" lean-forward="true" selection-start-line="50" selection-start-column="14" selection-end-line="50" selection-end-column="46" />
+            <state relative-caret-position="261">
+              <caret line="71" column="19" lean-forward="true" selection-start-line="71" selection-start-column="19" selection-end-line="71" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -71,7 +74,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/meatbol/Scanner.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="197">
+            <state relative-caret-position="2482">
               <caret line="150" selection-start-line="150" selection-end-line="150" />
             </state>
           </provider>
@@ -91,6 +94,7 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/src/p4Array.txt" />
+        <option value="$PROJECT_DIR$/src/slash.txt" />
         <option value="$PROJECT_DIR$/src/meatbol/Parser.java" />
         <option value="$PROJECT_DIR$/src/meatbol/Utility.java" />
       </list>
@@ -128,8 +132,8 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -174,8 +178,8 @@
     <frame x="-7" y="-7" width="1295" height="735" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.3654321" visible="true" weight="0.14331985" />
-      <window_info active="true" id="Structure" order="1" sideWeight="0.6345679" side_tool="true" visible="true" weight="0.14331985" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.36296296" visible="true" weight="0.14574899" />
+      <window_info id="Structure" order="1" sideWeight="0.63703704" side_tool="true" visible="true" weight="0.14574899" />
       <window_info id="Capture Tool" order="2" />
       <window_info id="Image Layers" order="3" />
       <window_info id="Designer" order="4" />
@@ -183,8 +187,8 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.3283582" />
-      <window_info anchor="bottom" id="Debug" order="3" visible="true" weight="0.39966834" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3283582" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39966834" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -234,40 +238,36 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/meatbol/Parser.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="232">
-          <caret line="2376" column="91" selection-start-line="2376" selection-start-column="91" selection-end-line="2376" selection-end-column="91" />
-          <folding>
-            <element signature="method#ifStmt#0;class#Parser#0" />
-            <element signature="method#whileStmt#0;class#Parser#0" />
-            <element signature="method#forStmt#0;class#Parser#0" />
-            <element signature="method#forInStmt#0;class#Parser#0" />
-            <element signature="e#93906#103967#1" />
-            <element signature="e#95072#104137#1" />
-            <element signature="method#forToStmt#0;class#Parser#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/p4Array.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-96">
-          <caret line="50" column="46" lean-forward="true" selection-start-line="50" selection-start-column="14" selection-end-line="50" selection-end-column="46" />
+        <state relative-caret-position="261">
+          <caret line="71" column="19" lean-forward="true" selection-start-line="71" selection-start-column="19" selection-end-line="71" selection-end-column="19" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/slash.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-612">
-          <caret line="15" column="22" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="22" />
+        <state relative-caret-position="51">
+          <caret line="3" column="6" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/meatbol/Parser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="143">
+          <caret line="1446" column="16" selection-start-line="1446" selection-start-column="16" selection-end-line="1451" selection-end-column="22" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/meatbol/Utility.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="476">
-          <caret line="1109" column="19" selection-start-line="1109" selection-start-column="19" selection-end-line="1109" selection-end-column="19" />
+        <state relative-caret-position="153">
+          <caret line="1210" column="4" selection-start-line="1210" selection-start-column="4" selection-end-line="1210" selection-end-column="4" />
+          <folding>
+            <element signature="e#50156#50866#0" />
+            <element signature="e#50872#52896#0" />
+            <element signature="e#52902#55070#0" />
+          </folding>
         </state>
       </provider>
     </entry>

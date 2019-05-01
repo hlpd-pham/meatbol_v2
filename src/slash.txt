@@ -1,6 +1,6 @@
 Int iCM[10] = 10, 20, 30, 40, 50, 60;
 String a = "con heo";
 
-if 23 notin iCM:
+if 10 in iCM:
     print("yay");
     endif;
