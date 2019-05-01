@@ -69,10 +69,10 @@ for i=0 to ELEM(iDM)-1:
            bChange = T;
         endif;
     endfor;
-//    if not bChange:
-//        print("\tready to leave, i=", i);
-//        // break;
-//    endif;
+    if not bChange:
+        print("\tready to leave, i=", i);
+        // break;
+    endif;
 endfor; 
 print("sorted array");
 for i=0 to ELEM(iDM):
