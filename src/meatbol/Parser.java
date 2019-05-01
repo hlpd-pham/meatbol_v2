@@ -440,6 +440,100 @@ public class Parser {
                         res = expr(";", false);
                         // sliced array assigned to sliced array
 
+                        ResultValue dstStruct = storageMgr.getArrayStructure(this, variableStr);
+
+                        // verify type
+                        if (dstStruct.type == SubClassif.INTEGER)
+                            res = Utility.toInt(this, res);
+                        else if (dstStruct.type == SubClassif.FLOAT)
+                            res = Utility.toFloat(this, res);
+                        else if (res.type != dstStruct.type)
+                            error("Expect assigned value to be type '%s'.  Found type '%s'",
+                                    variableToken.subClassif.toString(), res.type.toString());
+
+                        // expression result is primitive type
+                        if (res.structure == IdenClassif.PRIMITIVE || res.structure == IdenClassif.EMPTY)
+                        {
+                            if (srcSlice.value.length() == 2)
+                            {
+                                int iSubscript = Integer.parseInt(srcSlice.value.replaceAll("~",""));
+
+                                // slicing doesn't support negative subscript
+                                if (iSubscript < 0)
+                                    error("Negative subscript in slicing");
+
+                                // boundary check
+                                if (iSubscript >= storageMgr.arrayMaxSize(this, dstArrayName) &&
+                                        storageMgr.arrayMaxSize(this, dstArrayName) != -1)
+                                    error("Index out of bound '%d'", iSubscript);
+
+                                // destination array
+                                ArrayList<ResultValue> dstArray = storageMgr.getArray(this, dstArrayName);
+
+                                // TODO fix the if-else block below
+
+                                // myGradeM[~1] = gradeM;
+                                if (srcSlice.value.indexOf('~') == 0)
+                                {
+                                    // clear element (or populate empty element until index
+                                    for (int i = 0; i < iSubscript; i++)
+                                    {
+                                        try
+                                        {
+                                            dstArray.set(i, res);
+                                        }
+                                        catch (IndexOutOfBoundsException e){
+                                            dstArray.add(res);
+                                        }
+                                    }
+
+                                    resArray = dstArray;
+                                }
+                                // myGradeM[1~] = gradeM;
+                                else {
+                                    // array limit
+                                    int arrayLimit = 0;
+
+                                    // fixed array
+                                    if (dstStruct.structure == IdenClassif.FIXED_ARRAY) {
+
+                                        arrayLimit = storageMgr.arrayMaxSize(this, dstArrayName);
+
+                                    }
+                                    // unbound array
+                                    else if (dstStruct.structure == IdenClassif.UNBOUND_ARRAY) {
+                                        arrayLimit = storageMgr.getAllocatedLength(this, dstArrayName);
+                                    }
+
+                                    // check if element exist (or populate empty element until index
+                                    for (int i = 0; i < iSubscript; i++)
+                                    {
+                                        try
+                                        {
+                                            dstArray.get(i);
+                                        }
+                                        catch (IndexOutOfBoundsException e){
+                                            dstArray.add(new ResultValue());
+                                        }
+                                    }
+
+                                    // populate array
+                                    for (int i = iSubscript; i < arrayLimit; i++) {
+                                        try {
+                                            dstArray.set(i, res);
+                                        }
+                                        catch (IndexOutOfBoundsException e){
+                                            dstArray.add(res);
+                                        }
+                                    }
+
+                                    resArray = dstArray;
+                                }
+                            }
+                        }
+                        else {
+                            System.out.println("Got here");
+                        }
                     }
                     catch (ParserException pe)
                     {
@@ -464,24 +558,25 @@ public class Parser {
                                     storageMgr.arrayMaxSize(this, dstArrayName) != -1)
                                 error("Index out of bound '%d'", iSubscript);
 
+                            // name of source array
+                            String srcArrayName = srcArrayToken.tokenStr + "[";
+                            // structure of source array
+                            ResultValue srcStruct = storageMgr.getArrayStructure(this, srcArrayName);
+
+                            // structure of destination array
+                            ResultValue dstStruct = storageMgr.getArrayStructure(this, dstArrayName);
+
+                            // verify data type
+                            if (srcStruct.type != dstStruct.type)
+                                error("Expect assigned value to be type '%s'.  Found type '%s'",
+                                        dstStruct.type.toString(), srcStruct.type.toString());
+
+                            // destination array
+                            ArrayList<ResultValue> dstArray = storageMgr.getArray(this, dstArrayName);
+
                             // myGradeM[~1] = gradeM;
                             if (srcSlice.value.indexOf('~') == 0)
                             {
-                                // name of source array
-                                String srcArrayName = srcArrayToken.tokenStr + "[";
-                                // structure of source array
-                                ResultValue srcStruct = storageMgr.getArrayStructure(this, srcArrayName);
-                                // structure of destination array
-                                ResultValue dstStruct = storageMgr.getArrayStructure(this, dstArrayName);
-
-                                // verify data type
-                                if (srcStruct.type != dstStruct.type)
-                                    error("Expect assigned value to be type '%s'.  Found type '%s'",
-                                            dstStruct.type.toString(), srcStruct.type.toString());
-
-                                // destination array
-                                ArrayList<ResultValue> dstArray = storageMgr.getArray(this, dstArrayName);
-
                                 // array limit
                                 int arrayLimit = 0;
 
@@ -518,7 +613,70 @@ public class Parser {
                             }
                             // myGradeM[1~] = gradeM;
                             else {
-                                // TODO continue here
+                                // array limit
+                                int arrayLimit = 0;
+
+                                // fixed array
+                                if (srcStruct.structure == IdenClassif.FIXED_ARRAY) {
+                                    int srcAllocatedSize = storageMgr.getAllocatedLength(this, srcArrayName);
+                                    int dstMaxSize = storageMgr.arrayMaxSize(this, dstArrayName);
+
+                                    // If source array is larger than destination array, it is not an error.
+                                    // It simply only copies enough to fill the source array
+                                    if (srcAllocatedSize >= (dstMaxSize-iSubscript))
+                                        arrayLimit = dstMaxSize;
+
+                                        // If source array is smaller than destination array, it only fills up
+                                        // the corresponding elements of the source array
+                                    else
+                                        arrayLimit = srcAllocatedSize;
+
+                                }
+                                // unbound array
+                                else if (srcStruct.structure == IdenClassif.UNBOUND_ARRAY) {
+                                    int srcAllocatedSize = storageMgr.getAllocatedLength(this, srcArrayName);
+                                    int dstAllocatedSize = storageMgr.getAllocatedLength(this, dstArrayName);
+
+                                    // If source array is larger than destination array, it is not an error.
+                                    // It simply only copies enough to fill the source array
+                                    if (srcAllocatedSize >= dstAllocatedSize)
+                                        arrayLimit = dstAllocatedSize;
+
+                                        // If source array is smaller than destination array, it only fills up
+                                        // the corresponding elements of the source array
+                                    else
+                                        arrayLimit = srcAllocatedSize;
+                                }
+
+                                // check if element exist (or populate empty element until index
+                                for (int i = 0; i < iSubscript; i++)
+                                {
+                                    try
+                                    {
+                                        dstArray.get(i);
+                                    }
+                                    catch (IndexOutOfBoundsException e){
+                                        dstArray.add(new ResultValue());
+                                    }
+                                }
+
+                                // populate array
+                                int j = 0;
+                                for (int i = iSubscript; i < arrayLimit; i++) {
+                                    ResultValue srcVariable = new ResultValue();
+
+                                    srcVariable = srcArray.get(j);
+                                    try {
+                                        dstArray.set(i, srcVariable);
+                                    }
+                                    catch (IndexOutOfBoundsException e){
+                                        dstArray.add(srcVariable);
+                                    }
+                                    j++;
+
+                                }
+
+                                resArray = dstArray;
                             }
                         }
                     }
@@ -1137,6 +1295,12 @@ public class Parser {
                         operand.terminatingStr = "";
                         pstStack.push(operand);
                         break;
+                    case BOOLEAN:
+                        operand.type = SubClassif.BOOLEAN;
+                        operand.structure = IdenClassif.PRIMITIVE;
+                        operand.value = Out.get(i).tokenStr;
+                        operand.terminatingStr = "";
+                        pstStack.push(operand);
                     default:
                         // TODO error?
                         break;
@@ -1226,7 +1390,7 @@ public class Parser {
      */
     public ResultValue evalCond() throws Exception
     {
-        String sLogicOperands = "<,>,<=,>=,!=,and,or,==,not";
+        String sLogicOperands = "<,>,<=,>=,!=,and,or,==,not,in,notin";
         String logicalOperator;
         // begin on the first token of the expression
         scan.getNext();
@@ -1244,8 +1408,19 @@ public class Parser {
         //System.out.printf("Should be the logic in evalconds: %s\n", scan.currentToken.tokenStr);
         logicalOperator = scan.currentToken.tokenStr;
         scan.getNext();
-        rightRes = expr(":", false);
-        //System.out.printf("Current Token after evalconds: %s\n", scan.currentToken.tokenStr);
+
+        //in case of array then this can not handle normally
+        // we FLOP so we can't do slicing for array for 'in' and 'notin' operator
+        try{
+            this.storageMgr.getArray(this,scan.currentToken.tokenStr+"[");
+            rightRes.value = scan.currentToken.tokenStr;
+            rightRes.structure = IdenClassif.FIXED_ARRAY;
+            skipTo(":");
+        }
+        catch(Exception e){
+            rightRes = expr(":", false);
+        }
+
 
         switch (logicalOperator) {
             case "==":
@@ -1268,6 +1443,13 @@ public class Parser {
                 break;
             case "not":
                 res = Utility.not(this,rightRes);
+                break;
+            case "in":
+                res = Utility.in(this,leftRes,rightRes);
+                break;
+            case"notin":
+                res = Utility.notin(this,leftRes,rightRes);
+                break;
             default:
                 // TODO error
                 break;
@@ -1718,7 +1900,7 @@ public class Parser {
                     stack.push(scan.currentToken);
                     break;
                 default:
-                    // TODO error?
+                    //TODO error?
                     break;
             }
         }
@@ -1743,7 +1925,7 @@ public class Parser {
         // should be a semicolon to terminate print statement
         if (!scan.getNext().equals(";")) {
             System.out.printf("Got %s instead\n", scan.currentToken.tokenStr);
-            error("Expected ';' to terminate print statement");
+            error("Expected ';' to terminate print statement. Found '%s'", scan.currentToken.tokenStr);
         }
 
         // advance print cursor to next line

@@ -1110,6 +1110,105 @@ public class Utility {
         return res;
     }
 
+    public static ResultValue in (Parser parser, ResultValue res01, ResultValue res02)throws Exception {
+        ResultValue res = new ResultValue();
+        res.value = "F";
+        // the first value should only be an element
+
+        if (res01.type == SubClassif.IDENTIFIER )
+            res01 = parser.storageMgr.getVariable(parser,res01.value);      // replace op with the real value in storageManager
+
+
+        // if the second operand is an array ==> get the array
+        // if the second operand is a variable (String)
+        if((res02.structure == IdenClassif.UNBOUND_ARRAY)||
+                (res02.structure == IdenClassif.FIXED_ARRAY)){
+            ArrayList<ResultValue> tempM = parser.storageMgr.getArray(parser,res02.value+"[");
+
+            for (ResultValue r: tempM){
+                if(r.value.equals(res01.value)&&(r.type == res01.type)){
+                    res.value = "T";
+                    break;
+                }
+            }
+        }
+        else if((res02.type == SubClassif.IDENTIFIER)) {
+            res02 = parser.storageMgr.getVariable(parser, res02.value);      // replace op with the real value in storageManager
+            if (res02.type == SubClassif.STRING) {
+                if (res02.value.contains(res01.value))
+                    res.value = "T";
+                else {
+                    //if in that place is something other than an array or a string then error
+                    parser.error("Expecting an 'ARRAY' or a 'STRING' expression for the second operand.");
+                }
+            }
+        }
+        else if(res02.type == SubClassif.STRING){
+            if (res02.value.contains(res01.value))
+                res.value = "T";
+        }
+        else{
+            //if in that place is something other than an array or a string then error
+            parser.error("Expecting an 'ARRAY' or a 'STRING' expression for the second operand.");
+        }
+
+        res.type = SubClassif.BOOLEAN;
+        res.structure = IdenClassif.PRIMITIVE;
+        return res;
+    }
+
+    public static ResultValue notin (Parser parser, ResultValue res01, ResultValue res02)throws Exception {
+        ResultValue res = new ResultValue();
+        res.value = "F";
+        // the first value should only be an element
+
+        if (res01.type == SubClassif.IDENTIFIER )
+            res01 = parser.storageMgr.getVariable(parser,res01.value);      // replace op with the real value in storageManager
+
+
+        // if the second operand is an array ==> get the array
+        // if the second operand is a variable (String)
+        if((res02.structure == IdenClassif.UNBOUND_ARRAY)||
+                (res02.structure == IdenClassif.FIXED_ARRAY)){
+            ArrayList<ResultValue> tempM = parser.storageMgr.getArray(parser,res02.value+"[");
+
+            for (ResultValue r: tempM){
+                if(r.value.equals(res01.value)&&(r.type == res01.type)){
+                    res.value = "T";
+                    break;
+                }
+            }
+        }
+        else if((res02.type == SubClassif.IDENTIFIER)) {
+            res02 = parser.storageMgr.getVariable(parser, res02.value);      // replace op with the real value in storageManager
+            if (res02.type == SubClassif.STRING) {
+                if (res02.value.contains(res01.value))
+                    res.value = "T";
+                else {
+                    //if in that place is something other than an array or a string then error
+                    parser.error("Expecting an 'ARRAY' or a 'STRING' expression for the second operand.");
+                }
+            }
+        }
+        else if(res02.type == SubClassif.STRING){
+            if (res02.value.contains(res01.value))
+                res.value = "T";
+        }
+        else{
+            //if in that place is something other than an array or a string then error
+            parser.error("Expecting an 'ARRAY' or a 'STRING' expression for the second operand.");
+        }
+
+        // same with in just inverted
+        if(res.value.equals("F"))
+            res.value = "T";
+        else
+            res.value="F";
+        res.type = SubClassif.BOOLEAN;
+        res.structure = IdenClassif.PRIMITIVE;
+        return res;
+    }
+
     public static ResultValue dateDiff(Parser parser, ResultValue res01, ResultValue res02) throws Exception{
          //Next leap year is 2020, happens every 4 years
         ResultValue res = new ResultValue();
