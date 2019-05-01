@@ -151,7 +151,7 @@
     <configuration name="slash" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="meatbol.Meatbol" />
       <module name="meatbol_v2" />
-      <option name="PROGRAM_PARAMETERS" value="src/slash.txt" />
+      <option name="PROGRAM_PARAMETERS" value="src/p4Array.txt" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
