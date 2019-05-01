@@ -1,7 +1,5 @@
 package meatbol;
 
-import java.awt.image.AreaAveragingScaleFilter;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -2011,7 +2009,7 @@ public class Parser {
                 //Errors to check the endWhile lines
                 if(!resTemp.terminatingStr.equals("endwhile"))
                 {
-                    error("Expected 'endwhile' for a 'while' beginning line '%d'", saveLineNr);
+                    error("Expected 'endwhile' for a 'while' beginning line '%d'. Found '%s'", saveLineNr, resTemp.terminatingStr);
                 }
                 if(!scan.nextToken.tokenStr.equals(";"))
                 {
@@ -2060,7 +2058,8 @@ public class Parser {
      * @param debug     -   the debugger for debugging purposes
      * @throws Exception-   ParserException
      */
-    public ResultValue forStmt(boolean bExec, Debugger debug) throws Exception{
+    public ResultValue forStmt(boolean bExec, Debugger debug) throws Exception
+    {
         // saveLineNr for error handling and go back
         int saveLineNr = scan.currentToken.iSourceLineNr;
         ResultValue res = new ResultValue();
@@ -2111,7 +2110,8 @@ public class Parser {
      * @return
      * @throws Exception-   ParserException
      */
-    public ResultValue forInStmt(boolean bExec, Debugger debug)throws Exception{
+    public ResultValue forInStmt(boolean bExec, Debugger debug)throws Exception
+    {
         /*NOTE:
         collection          - the original copy of the array or String (not to be change to maintain the length)
         collection_token    - the String variable in StgMng of the collection should there be any (only in STRING case)
@@ -2596,7 +2596,8 @@ public class Parser {
      * @return
      * @throws Exception-   ParserException
      */
-    public ResultValue forToStmt(boolean bExec, Debugger debug, boolean by)throws Exception{
+    public ResultValue forToStmt(boolean bExec, Debugger debug, boolean by)throws Exception
+    {
         ResultValue limit = new ResultValue();
         ResultValue cv = new ResultValue();
         ResultValue incr = new ResultValue();
