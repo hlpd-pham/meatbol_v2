@@ -1117,6 +1117,7 @@ public class Parser {
         scan.getNext();
 
         while (!endSeparator.contains(scan.currentToken.tokenStr)) {
+
             switch (scan.currentToken.primClassif) {
                 case OPERAND:
                     out.add(scan.currentToken);
@@ -1451,11 +1452,15 @@ public class Parser {
 
         if (bExec) {
             while (scan.getNext() != "") {
+
+                //System.out.printf("Execute: %s\n", scan.currentToken.tokenStr);
+
                 if(scan.currentToken.primClassif == Classif.EOF )
                 {
                     System.out.print("Program finished.\n");
                     System.exit(0);
                 }
+
 
                 if (iLineNr != scan.iSourceLineNr)
                     iLineNr = scan.iSourceLineNr;
@@ -1497,6 +1502,11 @@ public class Parser {
                         }
                         else {
                             // TODO Error Handling?
+                        }
+                        if(scan.currentToken.tokenStr.equals("break")) {
+                            res = scan.currentToken.toResult();
+                            res.terminatingStr = "break";
+                            return res;
                         }
                         break;
                     // end of if, while for
@@ -1650,6 +1660,7 @@ public class Parser {
 
                 ResultValue resTemp = executeStatements(true);
 
+
                 // what ended the statements after the true part? else: or endif;
                 //System.out.printf("Hey, terminating string is: %s\n", resTemp.terminatingStr);
 
@@ -1658,6 +1669,13 @@ public class Parser {
                         error("expected ':' after 'else'");
                     }
                     resTemp = executeStatements(false); // since the condition was true, ignore the else part
+
+                }
+                if(resTemp.value.equals("break")){
+                    //resTemp = executeStatements(false);
+                    resTemp.value = scan.currentToken.tokenStr;
+                    resTemp.type = SubClassif.FLOW;
+                    return resTemp;
                 }
 
                 if (!resTemp.terminatingStr.equals("endif")) {
@@ -1958,6 +1976,14 @@ public class Parser {
             {
                 //Executing the lines within the while
                 ResultValue resTemp = executeStatements(true);
+
+                if(scan.currentToken.tokenStr.equals("break")){
+                    //ResultValue resTemp = executeStatements(false);
+                    while(!scan.currentToken.tokenStr.equals("endwhile")){
+                        scan.getNext();
+                    }
+                    return resCond;
+                }
 
                 //Errors to check the endWhile lines
                 if(!resTemp.terminatingStr.equals("endwhile"))
@@ -2452,6 +2478,15 @@ public class Parser {
                     }catch (ArrayIndexOutOfBoundsException e){ }
 
 
+                    if(scan.currentToken.tokenStr.equals("break")){
+                        //ResultValue resTemp = executeStatements(false);
+                        while(!scan.currentToken.tokenStr.equals("endfor")){
+                            scan.getNext();
+                        }
+                        return resCond;
+                    }
+
+
                     //After executing: check if it has end for
                     if(!(scan.currentToken.tokenStr.equals("endfor")))
                     {
@@ -2650,6 +2685,15 @@ public class Parser {
                 this.storageMgr.replace(this,Integer.toString(saveLineNr),cv);
                 this.storageMgr.replace(this,cv_token_str,cv);
                 //After executing: check if it has end for
+
+                if(scan.currentToken.tokenStr.equals("break")){
+                    //ResultValue resTemp = executeStatements(false);
+                    while(!scan.currentToken.tokenStr.equals("endfor")){
+                        scan.getNext();
+                    }
+                    return resCond;
+                }
+
                 if(!(scan.currentToken.tokenStr.equals("endfor")))
                 {
                     error("Expected 'endfor' for a 'for' beginning line '%d'", saveLineNr);
