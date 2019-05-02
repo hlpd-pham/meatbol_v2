@@ -965,6 +965,13 @@ public class Parser {
             // evaluate value for variable
             res02 = expr(";", false);
 
+            //System.out.printf("%s vs %s\n", res02.type.toString(), res.type.toString());
+
+            if(res02.type==SubClassif.DATE && res.type==SubClassif.STRING){
+                //Super sketchy, but it is what it is
+                res.type = SubClassif.DATE;
+            }
+
             if (res02.type != res.type)
                 error("Mismatch type with '%s'", idenToken.tokenStr);
 
@@ -1115,6 +1122,7 @@ public class Parser {
         scan.getNext();
 
         while (!endSeparator.contains(scan.currentToken.tokenStr)) {
+            //System.out.printf("expr: %s\n", scan.currentToken.tokenStr);
 
             switch (scan.currentToken.primClassif) {
                 case OPERAND:
@@ -1398,60 +1406,65 @@ public class Parser {
         ResultValue leftRes = new ResultValue();
         ResultValue rightRes = new ResultValue();
 
-        //System.out.printf("Current Token before evalconds: %s\n", scan.currentToken.tokenStr);
-        // not is just 1 operator so it doesn't have left op
-        if (!(scan.currentToken.tokenStr.equals("not")))
-            leftRes = expr(sLogicOperands, false);
+        if(!scan.nextToken.tokenStr.equals(":")) {
+            // not is just 1 operator so it doesn't have left op
+            if (!(scan.currentToken.tokenStr.equals("not")))
+                leftRes = expr(sLogicOperands, false);
 
+            //System.out.printf("Should be the logic in evalconds: %s\n", scan.currentToken.tokenStr);
+            logicalOperator = scan.currentToken.tokenStr;
+            scan.getNext();
 
-        //System.out.printf("Should be the logic in evalconds: %s\n", scan.currentToken.tokenStr);
-        logicalOperator = scan.currentToken.tokenStr;
-        scan.getNext();
+            //in case of array then this can not handle normally
+            // we FLOP so we can't do slicing for array for 'in' and 'notin' operator
+            try {
+                this.storageMgr.getArray(this, scan.currentToken.tokenStr + "[");
+                rightRes.value = scan.currentToken.tokenStr;
+                rightRes.structure = IdenClassif.FIXED_ARRAY;
+                skipTo(":");
+            } catch (Exception e) {
 
-        //in case of array then this can not handle normally
-        // we FLOP so we can't do slicing for array for 'in' and 'notin' operator
-        try{
-            this.storageMgr.getArray(this,scan.currentToken.tokenStr+"[");
-            rightRes.value = scan.currentToken.tokenStr;
-            rightRes.structure = IdenClassif.FIXED_ARRAY;
-            skipTo(":");
+                rightRes = expr(":orand", false);
+
+            }
+
+            switch (logicalOperator) {
+                case "==":
+                    res = Utility.equi(this, leftRes, rightRes);
+                    break;
+                case "<=":
+                    res = Utility.lEqui(this, leftRes, rightRes);
+                    break;
+                case ">=":
+                    res = Utility.mEqui(this, leftRes, rightRes);
+                    break;
+                case "<":
+                    res = Utility.less(this, leftRes, rightRes);
+                    break;
+                case ">":
+                    res = Utility.more(this, leftRes, rightRes);
+                    break;
+                case "!=":
+                    res = Utility.nEqui(this, leftRes, rightRes);
+                    break;
+                case "not":
+                    res = Utility.not(this, rightRes);
+                    break;
+                case "in":
+                    res = Utility.in(this, leftRes, rightRes);
+                    break;
+                case "notin":
+                    res = Utility.notin(this, leftRes, rightRes);
+                    break;
+                default:
+                    // TODO error
+                    break;
+            }
         }
-        catch(Exception e){
-            rightRes = expr(":", false);
-        }
-
-
-        switch (logicalOperator) {
-            case "==":
-                res = Utility.equi(this, leftRes, rightRes);
-                break;
-            case "<=":
-                res = Utility.lEqui(this, leftRes, rightRes);
-                break;
-            case ">=":
-                res = Utility.mEqui(this, leftRes, rightRes);
-                break;
-            case "<":
-                res = Utility.less(this, leftRes, rightRes);
-                break;
-            case ">":
-                res = Utility.more(this, leftRes, rightRes);
-                break;
-            case "!=":
-                res = Utility.nEqui(this, leftRes, rightRes);
-                break;
-            case "not":
-                res = Utility.not(this,rightRes);
-                break;
-            case "in":
-                res = Utility.in(this,leftRes,rightRes);
-                break;
-            case"notin":
-                res = Utility.notin(this,leftRes,rightRes);
-                break;
-            default:
-                // TODO error
-                break;
+        else{
+            //For a single variable lookup (i.e. if bIsInt: ...)
+            res = getVariableValue(scan.currentToken.tokenStr);
+            scan.getNext();
         }
         return res;
     } // END evalCond
@@ -1698,6 +1711,11 @@ public class Parser {
                     resTemp.type = SubClassif.FLOW;
                     return resTemp;
                 }
+                /*if(resTemp.value.equals("continue")){
+                    resTemp.value = scan.currentToken.tokenStr;
+                    resTemp.type = SubClassif.FLOW;
+                    return resTemp;
+                }*/
 
                 if (!resTemp.terminatingStr.equals("endif")) {
                     error("expected 'endif' for an 'if' beginning line '%d'", saveLineNr);
@@ -1834,6 +1852,7 @@ public class Parser {
                                 else if(stack.get(i).tokenStr.equals("dateAge"))
                                     bIgnoreComma = true;
                             }
+                            //System.out.printf("bignore: %s", bIgnoreComma);
                             if(!bIgnoreComma) {
                                 if (!sepSwitch) {
                                     sepSwitch = true;
@@ -1868,7 +1887,7 @@ public class Parser {
                                     // print value of the evaluated expression to std
                                     if (res.type == SubClassif.FLOAT && !res.value.contains("."))
                                         res.value += ".0";
-                                    //System.out.printf("--%s--", res.type.toString());
+
                                     System.out.printf("%s ", res.value);
 
                                     // reset stack and out
@@ -2005,6 +2024,15 @@ public class Parser {
                     }
                     return resCond;
                 }
+                if(scan.currentToken.tokenStr.equals("continue")){
+                    //resTemp = executeStatements(false);
+                    while(!scan.currentToken.tokenStr.equals("endwhile")){
+                        scan.getNext();
+                    }
+                    return resCond;
+                }
+
+                System.out.printf("endWhile has: %s\n",resTemp.terminatingStr);
 
                 //Errors to check the endWhile lines
                 if(!resTemp.terminatingStr.equals("endwhile"))
@@ -2507,6 +2535,14 @@ public class Parser {
                             scan.getNext();
                         }
                         return resCond;
+                    }
+                    if(scan.currentToken.tokenStr.equals("continue")){
+                        //ResultValue resTemp = executeStatements(false);
+                        while(!scan.currentToken.tokenStr.equals("endfor")){
+                            scan.getNext();
+                        }
+                        System.out.printf("token: %s %s\n", scan.currentToken.tokenStr, scan.currentToken.subClassif.toString());
+                        //return resCond;
                     }
 
 

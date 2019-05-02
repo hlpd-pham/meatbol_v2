@@ -351,8 +351,13 @@ public class Scanner{
                 iColPos++;
 
                 boolean bIsDate = false;
+
+
+
+
                 //Check if the token is actually a Date object instead
-                if(textCharM.length==11&&iColPos+7<=textCharM.length) {
+                if(iColPos+7<=textCharM.length) {
+
                     if (textCharM[iColPos + 4] == '-' && textCharM[iColPos + 7] == '-') {
                         nextToken.subClassif = SubClassif.DATE;
                         bIsDate = true;
@@ -362,6 +367,9 @@ public class Scanner{
                         }
                     }
                 }
+
+
+
 
                 // get the string literal
                 if(bIsDate == false) {
