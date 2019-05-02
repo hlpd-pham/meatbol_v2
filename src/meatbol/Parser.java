@@ -1402,6 +1402,14 @@ public class Parser {
         // begin on the first token of the expression
         scan.getNext();
 
+        if (scan.currentToken.subClassif == SubClassif.BOOLEAN &&
+                scan.nextToken.tokenStr.equals(":"))
+        {
+            ResultValue res = scan.currentToken.toResult();
+            skipTo(":");
+            return res;
+        }
+
         ResultValue res = new ResultValue();
         ResultValue leftRes = new ResultValue();
         ResultValue rightRes = new ResultValue();
