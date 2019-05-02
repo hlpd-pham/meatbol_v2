@@ -1475,15 +1475,11 @@ public class Parser {
 
         if (bExec) {
             while (scan.getNext() != "") {
-
-                //System.out.printf("Execute: %s\n", scan.currentToken.tokenStr);
-
                 if(scan.currentToken.primClassif == Classif.EOF )
                 {
                     System.out.print("Program finished.\n");
                     System.exit(0);
                 }
-
 
                 if (iLineNr != scan.iSourceLineNr)
                     iLineNr = scan.iSourceLineNr;
@@ -1682,7 +1678,6 @@ public class Parser {
 
 
                 ResultValue resTemp = executeStatements(true);
-
 
                 // what ended the statements after the true part? else: or endif;
                 //System.out.printf("Hey, terminating string is: %s\n", resTemp.terminatingStr);
