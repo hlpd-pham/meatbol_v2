@@ -1,92 +1,23 @@
-//Testing File for all data types
-print("testCase-Datatypes.txt");
+Bool a = T;
+Bool b = F;
+Bool c = T;
 
-// INT TESTING
-print("Int Testing:\n");
-
-//Integer declaration and assignment
-Int iVal = 10;
-print("\tInitial assignment, iVal: ", iVal);
-
-//Integer assignment after declaration
-iVal = 5;
-print("\tAfter reassignment, iVal: ", iVal);
-
-//Integer declaration and assignment with an expression
-Int iValExpr = 10*5;
-print("\tInitial assignment with expression, iValExpr: ", iValExpr);
-
-//Integer assignment with an expression and another variable
-iValExpr = 3 + iVal;
-print("\tAfter reassignment with expression, iValExpr: ", iValExpr);
-
-// FLOAT TESTING
-print("\nFloat Testing:\n");
-
-
-//Float assignment and declaration
-Float fVal = 10.5;
-print("\tInitial Declaration and assignment, fVal =", fVal);
-
-//Float declaration and assignment with an expression
-Float fValExpr = 10.5 / 5;
-print("\tInitial Declaration and assignment w/ expression, fValExpr =", fValExpr);
-
-//Float declaration, followed by a separate assignment from another variable
-Float fVal2;
-fVal2 = fValExpr;
-print("\tInitial Declaration and assignment w/ another variable, fVal2 =", fVal2);
-
-// STRING TESTING
-print("\nString Testing:\n");
-
-//String declaration and assignment
-String sWord = "Words";
-print("\tInitial declaration and assignment, sWord=", sWord);
-
-//Reassigning a value to a pre-declared variable
-sWord = "OtherWords";
-print("\tAssignment after declaration, sWord=", sWord);
-
-//Conjoining two string variables and assigning that to a new variable.
-String sWord = "Words";
-String sMore = "More";
-String sConcat = sMore # sWord;
-print("\tConcatenated strings, sConcat=", sConcat);
-
-// BOOLEAN TESTING
-print("\nBoolean Testing:\n");
-
-//Boolean declaration and assignment
-Bool bVal = T;
-print("\tBoolean declared and assigned immediately, bVal=", bVal);
-
-//Boolean declaration, separate assignment
-Bool bVal;
-bVal = F;
-print("\tBoolean declared and then assigned separately, bVal=", bVal);
-
-//Using a boolean as a condition for an if statement
-Bool bVal = T;
-if bVal:
-    print("\tbVal is true");
+if a and b :
+    print("And wrong");
 endif;
-print("\tIf statement proved true when bVal=", bVal);
 
-// Date TESTING
-print("\nDate Testing:\n");
+if a or b :
+    print("Or right");
+endif;
 
-//Date declaration and assignment
-Date dThen = "1979-05-25";
-print("\tDate declared and assigned immediately, dThen=", dThen);
+if a and c:
+    print('and right');
+endif;
 
-//Date declaration, separate assignment
-Date dNow;
-dNow = "2019-05-02";
-print("\tDate declared and then assigned, dNow=", dNow);
+if a == c:
+    print("Correct c == a");
+endif;
 
-//Sneak peek at the date's builtin function dateAge
-print("\tThe age is:", dateAge(dThen, dNow));
-
-// End of Data type testing
-print("\nEnd of data type testing.\n");
+if b != c:
+    print("Correct c != a");
+endif;

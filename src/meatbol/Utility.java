@@ -489,6 +489,18 @@ public class Utility {
                         parser.iLineNr, res02.type.toString());
             }
         }
+        //if the first operand is a boolean
+        else if (res01.type == SubClassif.BOOLEAN){
+            // check data type of res02 it has to be boolean as well else raise error
+            if(res02.type == SubClassif.BOOLEAN){
+                if(res01.value.equals(res02.value))
+                    res.value = "T";
+                else
+                    res.value = "F";
+            }else{
+                parser.error("Expecting BOOLEAN for the second operand but received '%s' data type.",res02.type.toString() );
+            }
+        }
         else{
 
             parser.error("Line '%d': Expecting type STRING, INTEGER, FLOAT for the first operand but received '%s' data type.",
@@ -561,6 +573,18 @@ public class Utility {
             else{
                 parser.error("Line '%d': Expecting STRING, INTEGER, FLOAT for the second operand but received '%s' data type.",
                         parser.iLineNr, res02.type.toString());
+            }
+        }
+        //if the first operand is a boolean
+        else if (res01.type == SubClassif.BOOLEAN){
+            // check data type of res02 it has to be boolean as well else raise error
+            if(res02.type == SubClassif.BOOLEAN){
+                if(!(res01.value.equals(res02.value)))
+                    res.value = "T";
+                else
+                    res.value = "F";
+            }else{
+                parser.error("Expecting BOOLEAN for the second operand but received '%s' data type.",res02.type.toString() );
             }
         }
         else{
@@ -1205,6 +1229,52 @@ public class Utility {
             res.value="F";
         res.type = SubClassif.BOOLEAN;
         res.structure = IdenClassif.PRIMITIVE;
+        return res;
+    }
+
+    public static ResultValue and (Parser parser, ResultValue res01, ResultValue res02) throws Exception{
+        ResultValue res = new ResultValue();
+
+        // if any of the result value is identifier
+        if (res01.type == SubClassif.IDENTIFIER ){
+            res01 = parser.storageMgr.getVariable(parser,res01.value);      // replace op1 with the real value in storageManager
+        }
+        if(res02.type == SubClassif.IDENTIFIER){
+            res02 = parser.storageMgr.getVariable(parser,res02.value);      // replace op2 with the real value in storageManager
+        }
+
+        if(res01.type!= SubClassif.BOOLEAN || res02.type != SubClassif.BOOLEAN){
+            parser.error("Expecting both argument to be BOOLEAN for AND operator");
+        }
+
+        res.value = "F";
+        res.type = SubClassif.BOOLEAN;
+        if( res01.value.equals("T") && res02.value.equals("T"))
+            res.value = "T";
+
+        return res;
+    }
+
+    public static ResultValue or (Parser parser, ResultValue res01, ResultValue res02) throws Exception{
+        ResultValue res = new ResultValue();
+
+        // if any of the result value is identifier
+        if (res01.type == SubClassif.IDENTIFIER ){
+            res01 = parser.storageMgr.getVariable(parser,res01.value);      // replace op1 with the real value in storageManager
+        }
+        if(res02.type == SubClassif.IDENTIFIER){
+            res02 = parser.storageMgr.getVariable(parser,res02.value);      // replace op2 with the real value in storageManager
+        }
+
+        if(res01.type!= SubClassif.BOOLEAN || res02.type != SubClassif.BOOLEAN){
+            parser.error("Expecting both argument to be BOOLEAN for OR operator");
+        }
+
+        res.value = "F";
+        res.type = SubClassif.BOOLEAN;
+        if( res01.value.equals("T") || res02.value.equals("T"))
+            res.value = "T";
+
         return res;
     }
 

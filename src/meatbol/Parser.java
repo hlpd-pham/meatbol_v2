@@ -1397,7 +1397,7 @@ public class Parser {
      */
     public ResultValue evalCond() throws Exception
     {
-        String sLogicOperands = "<,>,<=,>=,!=,and,or,==,not,in,notin";
+        String sLogicOperands = "<,>,<=,>=,!=,and,or,==,not,in,notin,and,or";
         String logicalOperator;
         // begin on the first token of the expression
         scan.getNext();
@@ -1463,6 +1463,12 @@ public class Parser {
                     break;
                 case "notin":
                     res = Utility.notin(this, leftRes, rightRes);
+                    break;
+                case "and":
+                    res = Utility.and(this, leftRes, rightRes);
+                    break;
+                case "or":
+                    res = Utility.or(this, leftRes, rightRes);
                     break;
                 default:
                     // TODO error
