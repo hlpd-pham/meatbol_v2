@@ -1552,6 +1552,11 @@ public class Parser {
                             res.terminatingStr = "break";
                             return res;
                         }
+                        if(scan.currentToken.tokenStr.equals("continue")) {
+                            res = scan.currentToken.toResult();
+                            res.terminatingStr = "continue";
+                            return res;
+                        }
                         break;
                     // end of if, while for
                     case DEBUG:
@@ -1720,11 +1725,11 @@ public class Parser {
                     resTemp.type = SubClassif.FLOW;
                     return resTemp;
                 }
-                /*if(resTemp.value.equals("continue")){
+                if(resTemp.value.equals("continue")){
                     resTemp.value = scan.currentToken.tokenStr;
                     resTemp.type = SubClassif.FLOW;
                     return resTemp;
-                }*/
+                }
 
                 if (!resTemp.terminatingStr.equals("endif")) {
                     error("expected 'endif' for an 'if' beginning line '%d'", saveLineNr);
@@ -2027,22 +2032,17 @@ public class Parser {
                 ResultValue resTemp = executeStatements(true);
 
                 if(scan.currentToken.tokenStr.equals("break")){
-                    //ResultValue resTemp = executeStatements(false);
                     while(!scan.currentToken.tokenStr.equals("endwhile")){
                         scan.getNext();
                     }
                     return resCond;
                 }
                 if(scan.currentToken.tokenStr.equals("continue")){
-                    //resTemp = executeStatements(false);
                     while(!scan.currentToken.tokenStr.equals("endwhile")){
                         scan.getNext();
                     }
                     return resCond;
                 }
-
-                System.out.printf("endWhile has: %s\n",resTemp.terminatingStr);
-
                 //Errors to check the endWhile lines
                 if(!resTemp.terminatingStr.equals("endwhile"))
                 {
@@ -2469,6 +2469,8 @@ public class Parser {
                 //EXIST:    -   retrieve
                 //          -   check data type
                 cv = storageMgr.getVariable(this,cv_token_str);
+                if (cv.type != SubClassif.STRING )
+                    error("The 'ITEM' variable: '%s' have to be String type",cv_token_str);
             }
             //if fail then we declare
             catch (Exception e){
@@ -2480,8 +2482,7 @@ public class Parser {
 
                 this.storageMgr.storage.put(cv_token_str,temp);
             }
-            if (cv.type != SubClassif.STRING )
-                error("The 'ITEM' variable: '%s' have to be String type",cv_token_str);
+
 
             //*** WE WANT LAST ITERATION VALUE CARRY OUTSIDE THE LOOP BUT NOT FOR NEXT ITERATION
             // ==> every iteration: check if the first spot has the correct original character
@@ -2755,12 +2756,23 @@ public class Parser {
                 this.storageMgr.replace(this,cv_token_str,cv);
                 //After executing: check if it has end for
 
+                //System.out.printf("token: %s %s\n", scan.currentToken.tokenStr, scan.currentToken.subClassif.toString());
+
                 if(scan.currentToken.tokenStr.equals("break")){
                     //ResultValue resTemp = executeStatements(false);
                     while(!scan.currentToken.tokenStr.equals("endfor")){
                         scan.getNext();
                     }
                     return resCond;
+                }
+                if(scan.currentToken.tokenStr.equals("continue")){
+                    ResultValue resTemp = executeStatements(false);
+                    while(!scan.currentToken.tokenStr.equals("endfor")){
+                        scan.getNext();
+                    }
+                    System.out.printf("token: %s %s\n", scan.currentToken.tokenStr, scan.currentToken.subClassif.toString());
+                    return resCond;
+                    //return resTemp;
                 }
 
                 if(!(scan.currentToken.tokenStr.equals("endfor")))
