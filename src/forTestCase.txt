@@ -64,12 +64,12 @@ for concac in iKM:
 endfor;
 print("----------------------");
 print("Adding 5 to the array");
-for concac in iKM:
-    concac = concac +5;
+for a in iKM:
+    a += 5;
 endfor;
 print("Reprint the loop+");
-for concac in iKM:
-    print (concac);
+for he in iKM:
+    print (he);
 endfor;
 
 print("----------------------");
@@ -77,15 +77,14 @@ print("Triple nested");
 Int pa = 0;
 for i in "Con cho":
     print(i);
-    for io in iDM:
+    for io in iKM:
         print("\t",io);
-
-
+            for pa = 9 to 15:
+                 print("\t \tpa =",pa);
+            endfor;
     endfor;
 endfor;
 
-for a = 9 to 15:
-     print(a);
-endfor;
+
 
 print("concho");

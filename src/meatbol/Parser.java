@@ -2261,6 +2261,8 @@ public class Parser {
                 //EXIST:    -   retrieve
                 //          -   check data type
                 cv1 = storageMgr.getVariable(this,cv_token_str);
+                if (cv.type != arrayM.get(0).type)
+                    error("The 'ITEM' variable: '%s' doesn't have the same type as the 'ARRAY'",cv_token_str);
             }
             //if fail then we declare
             catch (Exception e){
@@ -2272,8 +2274,7 @@ public class Parser {
             cv.value = cv1.value;
             cv.type = cv1.type;
             cv.structure = cv1.structure;
-            if (cv.type != arrayM.get(0).type)
-                error("The 'ITEM' variable: '%s' doesn't have the same type as the 'ARRAY'",cv_token_str);
+
 
             //*** WE WANT LAST ITERATION VALUE CARRY OUTSIDE THE LOOP BUT NOT FOR NEXT ITERATION
             // ==> every iteration: check if the first spot has the correct original character
