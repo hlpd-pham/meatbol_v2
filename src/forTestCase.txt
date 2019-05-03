@@ -1,3 +1,6 @@
+for a = 9 to 15:
+    print(a);
+    endfor;
 print('a'#"bc");
 // Simple Counting Loop
 print("----------------------");
@@ -24,6 +27,9 @@ Int iDM[10] = 10,20,30,40,50,60;
 for i = 0 to ELEM(iDM)-1:
     print(iDM[i]);
     for j = 1 to 15 by 5:
+        for lo = 2 to 8 by 3:
+            print("\t \t", lo);
+        endfor;
         print("\t", j);
     endfor;
 endfor;
@@ -44,9 +50,42 @@ for l in b:
 endfor;
 
 for l in b:
-    l = l # "^";
+    l = l # "_";
 endfor;
 
-for l in b:
-    print(l);
+print(b);
+
+
+//------------------------------------------
+Int iKM[10] = 10,20,30,40,50,60;
+print("----------------------");
+for concac in iKM:
+    print (concac);
 endfor;
+print("----------------------");
+print("Adding 5 to the array");
+for concac in iKM:
+    concac = concac +5;
+endfor;
+print("Reprint the loop+");
+for concac in iKM:
+    print (concac);
+endfor;
+
+print("----------------------");
+print("Triple nested");
+Int pa = 0;
+for i in "Con cho":
+    print(i);
+    for io in iDM:
+        print("\t",io);
+
+
+    endfor;
+endfor;
+
+for a = 9 to 15:
+     print(a);
+endfor;
+
+print("concho");
