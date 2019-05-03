@@ -2551,7 +2551,6 @@ public class Parser {
                         while(!scan.currentToken.tokenStr.equals("endfor")){
                             scan.getNext();
                         }
-                        System.out.printf("token: %s %s\n", scan.currentToken.tokenStr, scan.currentToken.subClassif.toString());
                         //return resCond;
                     }
 
@@ -2770,7 +2769,6 @@ public class Parser {
                     while(!scan.currentToken.tokenStr.equals("endfor")){
                         scan.getNext();
                     }
-                    System.out.printf("token: %s %s\n", scan.currentToken.tokenStr, scan.currentToken.subClassif.toString());
                     return resCond;
                     //return resTemp;
                 }
