@@ -1,0 +1,52 @@
+print('a'#"bc");
+// Simple Counting Loop
+print("----------------------");
+for i=0 to 5:
+    print(i);
+endfor;
+
+//with By:
+print("----------------------");
+for i=0 to 10 by 2:
+    print(i);
+endfor;
+
+//changing counting variable:
+print("----------------------");
+for i=0 to 10 by 2:
+    print(i);
+    i = i+1;
+endfor;
+
+print("----------------------");
+Int iDM[10] = 10,20,30,40,50,60;
+// nested counting loop
+for i = 0 to ELEM(iDM)-1:
+    print(iDM[i]);
+    for j = 1 to 15 by 5:
+        print("\t", j);
+    endfor;
+endfor;
+//------------------------------------------
+//Simple String loop
+String a = 'Con heo';
+print("----------------------");
+for q in a:
+    print(q);
+endfor;
+
+//------------------------------------------
+//Simple String loop
+String b = 'Con ga';
+print("----------------------");
+for l in b:
+    print(l);
+endfor;
+
+for l in b:
+    l = l # "^";
+endfor;
+
+for l in b:
+    print(l);
+endfor;

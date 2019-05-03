@@ -1329,7 +1329,6 @@ public class Parser {
                     //Element is an operator so push it into the list
                     ResultValue operator2 = new ResultValue();
                     operator2.value = operator.tokenStr;
-
                     switch (operator.tokenStr) {
                         case "+":
                             operator2.type = SubClassif.PLUS;
@@ -2469,6 +2468,8 @@ public class Parser {
                 //EXIST:    -   retrieve
                 //          -   check data type
                 cv = storageMgr.getVariable(this,cv_token_str);
+                if (cv.type != SubClassif.STRING )
+                    error("The 'ITEM' variable: '%s' have to be String type",cv_token_str);
             }
             //if fail then we declare
             catch (Exception e){
@@ -2480,8 +2481,7 @@ public class Parser {
 
                 this.storageMgr.storage.put(cv_token_str,temp);
             }
-            if (cv.type != SubClassif.STRING )
-                error("The 'ITEM' variable: '%s' have to be String type",cv_token_str);
+
 
             //*** WE WANT LAST ITERATION VALUE CARRY OUTSIDE THE LOOP BUT NOT FOR NEXT ITERATION
             // ==> every iteration: check if the first spot has the correct original character
